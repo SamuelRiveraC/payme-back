@@ -44,7 +44,7 @@ export default class OpenBankingProvider {
 }
 
 
-
+/*
 //GET ALL AND UPLOAD ALL?
 
 function authorizationBank () {
@@ -116,7 +116,6 @@ function AIS() {
         
         request(options, function (error, response, body) {
           if (error) return console.error('Failed: %s', error.message);
-          /*
           {
             "account": {
               "currency": "EUR",
@@ -134,7 +133,6 @@ function AIS() {
             ]
           }
 
-          */
 
           // userAccount.id = 
           // userAccount.alias = 
@@ -182,7 +180,6 @@ function AIS() {
                   }
                 ]
               }
-        */
 
         // userAccount.id = 
         // userAccount.alias = 
@@ -217,3 +214,4 @@ function AIS() {
 }
 
 
+*/
