@@ -1,0 +1,38 @@
+{
+  "name": "payme-back",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node ace build --production",
+    "start": "node ace serve"
+  },
+  "engines": {
+    "node": "14.x"
+  },
+  "devDependencies": {
+    "@adonisjs/assembler": "^3.0.6",
+    "adonis-preset-ts": "^2.0.0",
+    "pino-pretty": "^4.5.0",
+    "typescript": "^4.1.5",
+    "ts-node": "^9.1.1",
+    "youch": "^2.1.1",
+    "youch-terminal": "^1.0.1"
+  },
+  "dependencies": {
+    "@adonisjs/cli": "^5.0.9",
+    "@adonisjs/auth": "^6.0.0",
+    "@adonisjs/core": "^5.0.1",
+    "@adonisjs/lucid": "^11.0.1",
+    "@adonisjs/lucid-slugify": "github:adonisjs/adonis-lucid-slugify",
+    "@adonisjs/repl": "^2.0.1",
+    "@adonisjs/session": "^5.0.0",
+    "luxon": "^1.25.0",
+    "mysql": "^2.18.1",
+    "nanoid": "^3.1.20",
+    "phc-argon2": "^1.1.0",
+    "proxy-addr": "^2.0.6",
+    "reflect-metadata": "^0.1.13",
+    "source-map-support": "^0.5.19",
+    "ts-node": "^9.1.1"
+  }
+}
