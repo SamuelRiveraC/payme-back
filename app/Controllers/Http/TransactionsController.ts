@@ -1,4 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import Qs from "qs"
+import axios from "axios"
 
 import User from 'App/Models/User'
 import BankAccount from 'App/Models/BankAccount'
@@ -8,7 +10,10 @@ import Notification from 'App/Models/Notification'
 export default class TransactionsController {
   public async store ({auth, request, response}: HttpContextContract) {
     const user = await auth.authenticate()
-    let newTransaction = request.all()
+    let newTransaction = {}
+
+    newTransaction.amount = request.input("amount")
+
     let newNotification = { status: "0"}
     if (user.id == request.input("user_sender_id") || user.id == request.input("user_receiver_id")) {
       return response.status(400).send( {code:"E_SAME_USER"} )
@@ -16,13 +21,14 @@ export default class TransactionsController {
     //IS REQUESTING
     if (request.input("user_sender_id")) {
       const requestedUser = await User.findOrFail(request.input("user_sender_id"))
-
+      newTransaction.user_sender_id = requestedUser.id
       newTransaction.user_receiver_id = user.id
       newTransaction.status = "0"
       newNotification.user_id = requestedUser.id
       newNotification.type  = "0"
 
-      const transaction = await Transaction.create(request.all())
+      const transaction = await Transaction.create(newTransaction)
+
       newNotification.transaction_id = transaction.id
       await Notification.create(newNotification)
       await transaction.preload('sender')
@@ -31,8 +37,9 @@ export default class TransactionsController {
     }
     //IS SENDING
     else if (request.input("user_receiver_id")) {
+      newTransaction.user_receiver_id = request.input("user_receiver_id")
       newTransaction.user_sender_id = user.id
-      newTransaction.status = "1"
+      newTransaction.status = "0"
       newNotification.user_id = request.input("user_receiver_id")
       newNotification.type  = "1"
 
@@ -51,22 +58,61 @@ export default class TransactionsController {
       senderAccount.balance = senderAccount.balance - newTransaction.amount
       receiverAccount.balance = receiverAccount.balance + newTransaction.amount
 
+      const transaction = await Transaction.create(newTransaction)
+      await transaction.preload('sender')
+      await transaction.preload('receiver')
+      
+      let openBanking = {}
 
 
       /**
        * OPEN BANKING - PIS API
       **/
-        const transaction = await Transaction.create(request.all())
 
-        await senderAccount.save()
-        await receiverAccount.save()
 
-        newNotification.transaction_id = transaction.id
-        await Notification.create(newNotification)
+        if (request.input("bank") === "payme") {
+          openBanking = {status: 200}
+        }
+        if (request.input("bank") === "deutschebank") {
 
-        await transaction.preload('sender')
-        await transaction.preload('receiver')
-        return transaction
+          openBanking = await axios.post( "https://simulator-api.db.com/gw/dbapi/paymentInitiation/payments/v1/instantSepaCreditTransfers", 
+            {
+              "debtorAccount": {
+                "iban": senderAccount.iban, "currencyCode": "EUR"
+              },
+              "instructedAmount": {
+                "amount": transaction.amount, "currencyCode": "EUR"
+              },
+              "creditorName": transaction.receiver.first_name+" "+transaction.receiver.last_name, 
+              "creditorAccount": {
+                "iban": receiverAccount.iban, "currencyCode": "EUR"
+              }
+            },
+            {headers: { Authorization: request.input("token"), otp: request.input("otp"), 'idempotency-id': transaction.uuid, }},
+
+              
+
+            ).then( async (response) => { 
+              if (response.status === 200 || response.status === 201) {
+                return response
+              }
+              
+          } ) .catch((error) => {return error.response})
+        }
+
+        if (openBanking.status == 200 || openBanking.status == 201) {
+          transaction.status = "1"
+          await transaction.save()
+          await senderAccount.save()
+          await receiverAccount.save()
+          newNotification.transaction_id = transaction.id
+          await Notification.create(newNotification)
+          return transaction
+        } else {
+          return response.status(openBanking.status).send( openBanking )
+        }
+
+
       /*
        * OPEN BANKING - PIS API
       **/
@@ -118,6 +164,23 @@ export default class TransactionsController {
       /**
        * OPEN BANKING - PIS API
       **/
+        if (request.input("bank") === "payme") {
+          await senderAccount.save()
+          await receiverAccount.save()
+  
+          newNotification.transaction_id = transaction.id
+          await Notification.create(newNotification)
+  
+          await transaction.preload('sender')
+          await transaction.preload('receiver')
+          return transaction
+        }
+        if (request.input("bank") === "deutschebank") {
+
+        }
+
+/*************************************************************************/
+
         await transaction.save()
         await senderAccount.save()
         await receiverAccount.save()

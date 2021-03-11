@@ -1,12 +1,20 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, beforeSave, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, beforeCreate, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
 import User from 'App/Models/User'
-
-import { nanoid } from 'nanoid/async'
+import { v4 as uuid } from 'uuid'
+// import { nanoid } from 'nanoid/async'
 
 export default class Transaction extends BaseModel {
   @column({ isPrimary: true })
-  public id: number
+  public id: string
+  
+  @column()
+  public uuid: string
+
+  @beforeCreate()
+  public static async createUUID (model: Transaction) {
+    model.uuid = uuid()
+  }
 
   @column()
   public user_sender_id: number

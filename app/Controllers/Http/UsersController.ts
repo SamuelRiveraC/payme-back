@@ -7,7 +7,13 @@ export default class UsersController {
 
   public async search ({params}: HttpContextContract) {
     //IGNORE OWN USER
-    const users = await Database.query().from('users').where('email', 'like', `%${params.id}%`).orWhere('phone', 'like', `%${params.id}%`)
+    const users = await User.query()
+    .where('email', 'like', `%${params.id}%`)
+    .orWhere('phone', 'like', `%${params.id}%`)
+    .whereHas('bankAccounts', (query) => {
+      query.where('primary', "true")
+    }).preload("bankAccounts") 
+
     return users
   }
 
@@ -36,6 +42,12 @@ export default class UsersController {
         query.preload('receiver')
       })
     })
+
+    /* 
+      GET AUTH AND REFRESH
+    */
+
+
 
     return user
   }

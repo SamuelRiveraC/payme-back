@@ -4,13 +4,30 @@ import BankAccount from 'App/Models/BankAccount'
 
 export default class BankAccountsController {
 
-  public async store ({auth}: HttpContextContract) {
+  public async store ({auth,request}: HttpContextContract) {
     const user = await auth.authenticate()
+    let bank = request.input("bank")
+    let bank_accounts = request.input("bank_accounts")
 
-    /**
-     * OPEN BANKING - AIS API
-    **/
-      const TestAccount = {
+    if (bank === "deutschebank" && bank_accounts.length > 0) {
+      await BankAccount.query().where('user_id', user.id).update({ primary: 'false' })
+      bank_accounts.forEach(async (account) =>  {
+        await BankAccount.updateOrCreate({iban: account.iban}, {
+          user_id: user.id,
+          alias: `${account.productDescription} (${user.last_name})`,
+          balance: account.currentBalance,
+          bic: account.bic, 
+          primary: 'false',
+        })
+      });
+    }
+    if (bank === "rabobank" && bank_accounts.length > 0) {
+
+    }
+    if (bank === "payme" ) {
+      await BankAccount.query().where('user_id', user.id).update({ primary: 'false' })
+
+      return await BankAccount.create({
         user_id: user.id,
         alias: `PayMe Test Account (${user.last_name})`,
         balance: 1000.00,
@@ -18,14 +35,9 @@ export default class BankAccountsController {
         bic: `PMXX PM ${(Math.random() * (99 - 0) + 0).toFixed()} ${(Math.random() * (999 - 0) + 0).toFixed()}`,
         primary: 'true',
         expires_at: `${new Date( new Date().getFullYear(), new Date().getMonth() + 3,  new Date().getDate() ).toLocaleString()}`
-      }
-      await BankAccount.query().where('user_id', user.id).update({ primary: 'false' })
-  
-      const newAccount = await BankAccount.create(TestAccount)
-      return newAccount
-    /**
-     * OPEN BANKING - AIS API
-    **/
+      })
+    }
+
   }
 
   public async show ({auth, params}: HttpContextContract) {
@@ -81,5 +93,8 @@ export default class BankAccountsController {
     const user = await auth.authenticate()
     const account = await BankAccount.query().where('id', params.id).andWhere('user_id', user.id).firstOrFail()
     await account.delete()
-  } 
+  }
+
+
+
 }

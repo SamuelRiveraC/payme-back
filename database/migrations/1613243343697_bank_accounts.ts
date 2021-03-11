@@ -8,7 +8,7 @@ export default class BankAccounts extends BaseSchema {
       table.increments('id')
       table.string('alias').notNullable()
 
-      table.string('iban').notNullable() //get bank by iban
+      table.string('iban').notNullable().unique() //get bank by iban
       table.string('bic').notNullable()
 
       table.string('primary').notNullable()

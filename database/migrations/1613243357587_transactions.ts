@@ -5,8 +5,9 @@ export default class Transactions extends BaseSchema {
 
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
-      table.increments('id')
-      // table.string('id').unique()
+      table.increments("id").primary();
+      
+      table.uuid("uuid")
 
       table.integer('user_sender_id').unsigned().references('id').inTable('users').onDelete('CASCADE')
       table.integer('user_receiver_id').unsigned().references('id').inTable('users').onDelete('CASCADE')
