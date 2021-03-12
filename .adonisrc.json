@@ -22,8 +22,7 @@
     "@adonisjs/core",
     "@adonisjs/auth",
     "@adonisjs/lucid",
-    "@adonisjs/session",
-    "./providers/OpenBankingProvider"
+    "@adonisjs/session"
   ],
   "aceProviders": [
     "@adonisjs/repl"

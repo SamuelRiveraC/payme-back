@@ -6,6 +6,7 @@ export default class BankAccounts extends BaseSchema {
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
+      table.string('bank').notNullable()
       table.string('alias').notNullable()
 
       table.string('iban').notNullable().unique() //get bank by iban
@@ -17,7 +18,7 @@ export default class BankAccounts extends BaseSchema {
 
       table.integer('user_id').unsigned().references('id').inTable('users').onDelete('CASCADE')
       table.timestamps(true,true)
-      table.timestamp('expires_at', { useTz: true }).nullable()
+      table.timestamp('expires_at', { useTz: true }).nullable() //¿?//
     })
   }
 
