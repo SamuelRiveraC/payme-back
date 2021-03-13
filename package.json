@@ -23,6 +23,8 @@
     "@adonisjs/repl": "^1.1.6",
     "@adonisjs/session": "^4.0.6",
     "axios": "^0.21.1",
+    "crypto": "^1.0.1",
+    "js-sha512": "^0.8.0",
     "luxon": "^1.25.0",
     "mysql": "^2.18.1",
     "nanoid": "^3.1.20",
@@ -32,6 +34,7 @@
     "qs": "^6.9.6",
     "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.19",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "uuidv4": "^6.2.6"
   }
 }

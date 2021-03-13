@@ -3,14 +3,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Database_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/Database"));
-const User_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/User"));
+const User_1 = __importDefault(require("App/Models/User"));
 class UsersController {
     async search({ params }) {
-        const users = await Database_1.default.query().from('users').where('email', 'like', `%${params.id}%`).orWhere('phone', 'like', `%${params.id}%`);
+        const users = await User_1.default.query()
+            .where('email', 'like', `%${params.id}%`)
+            .orWhere('phone', 'like', `%${params.id}%`)
+            .whereHas('bankAccounts', (query) => {
+            query.where('primary', "true");
+        }).preload("bankAccounts");
         return users;
     }
-    async getSelfData({ auth }) {
+    async refreshData({ auth }) {
         const user = await auth.authenticate();
         await user.preload('bankAccounts');
         await user.preload('transactionsSent', (query) => {

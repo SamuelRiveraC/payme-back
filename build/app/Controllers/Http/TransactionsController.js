@@ -3,25 +3,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const User_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/User"));
-const BankAccount_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/BankAccount"));
-const Transaction_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/Transaction"));
-const Notification_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/Notification"));
+const axios_1 = __importDefault(require("axios"));
+const User_1 = __importDefault(require("App/Models/User"));
+const BankAccount_1 = __importDefault(require("App/Models/BankAccount"));
+const Transaction_1 = __importDefault(require("App/Models/Transaction"));
+const Notification_1 = __importDefault(require("App/Models/Notification"));
 class TransactionsController {
     async store({ auth, request, response }) {
         const user = await auth.authenticate();
-        let newTransaction = request.all();
+        let newTransaction = {};
+        newTransaction.amount = request.input("amount");
         let newNotification = { status: "0" };
         if (user.id == request.input("user_sender_id") || user.id == request.input("user_receiver_id")) {
             return response.status(400).send({ code: "E_SAME_USER" });
         }
         if (request.input("user_sender_id")) {
             const requestedUser = await User_1.default.findOrFail(request.input("user_sender_id"));
+            newTransaction.user_sender_id = requestedUser.id;
             newTransaction.user_receiver_id = user.id;
             newTransaction.status = "0";
             newNotification.user_id = requestedUser.id;
             newNotification.type = "0";
-            const transaction = await Transaction_1.default.create(request.all());
+            const transaction = await Transaction_1.default.create(newTransaction);
             newNotification.transaction_id = transaction.id;
             await Notification_1.default.create(newNotification);
             await transaction.preload('sender');
@@ -29,8 +32,9 @@ class TransactionsController {
             return transaction;
         }
         else if (request.input("user_receiver_id")) {
+            newTransaction.user_receiver_id = request.input("user_receiver_id");
             newTransaction.user_sender_id = user.id;
-            newTransaction.status = "1";
+            newTransaction.status = "0";
             newNotification.user_id = request.input("user_receiver_id");
             newNotification.type = "1";
             let senderAccount = await BankAccount_1.default.query().where('user_id', user.id).andWhere('primary', "true").first();
@@ -46,14 +50,43 @@ class TransactionsController {
             }
             senderAccount.balance = senderAccount.balance - newTransaction.amount;
             receiverAccount.balance = receiverAccount.balance + newTransaction.amount;
-            const transaction = await Transaction_1.default.create(request.all());
-            await senderAccount.save();
-            await receiverAccount.save();
-            newNotification.transaction_id = transaction.id;
-            await Notification_1.default.create(newNotification);
+            const transaction = await Transaction_1.default.create(newTransaction);
             await transaction.preload('sender');
             await transaction.preload('receiver');
-            return transaction;
+            let openBanking = {};
+            if (request.input("bank") === "payme") {
+                openBanking = { status: 200 };
+            }
+            if (request.input("bank") === "deutschebank") {
+                openBanking = await axios_1.default.post("https://simulator-api.db.com/gw/dbapi/paymentInitiation/payments/v1/instantSepaCreditTransfers", {
+                    "debtorAccount": {
+                        "iban": senderAccount.iban, "currencyCode": "EUR"
+                    },
+                    "instructedAmount": {
+                        "amount": transaction.amount, "currencyCode": "EUR"
+                    },
+                    "creditorName": transaction.receiver.first_name + " " + transaction.receiver.last_name,
+                    "creditorAccount": {
+                        "iban": receiverAccount.iban, "currencyCode": "EUR"
+                    }
+                }, { headers: { Authorization: request.input("token"), otp: request.input("otp"), 'idempotency-id': transaction.uuid, } }).then(async (response) => {
+                    if (response.status === 200 || response.status === 201) {
+                        return response;
+                    }
+                }).catch((error) => { return error.response; });
+            }
+            if (openBanking.status == 200 || openBanking.status == 201) {
+                transaction.status = "1";
+                await transaction.save();
+                await senderAccount.save();
+                await receiverAccount.save();
+                newNotification.transaction_id = transaction.id;
+                await Notification_1.default.create(newNotification);
+                return transaction;
+            }
+            else {
+                return response.status(openBanking.status).send(openBanking);
+            }
         }
         return response.status(400).send({ code: "E_BAD_REQUEST" });
     }
@@ -81,6 +114,17 @@ class TransactionsController {
             senderAccount.balance = senderAccount.balance - transaction.amount;
             receiverAccount.balance = receiverAccount.balance + transaction.amount;
             transaction.status = "1";
+            if (request.input("bank") === "payme") {
+                await senderAccount.save();
+                await receiverAccount.save();
+                newNotification.transaction_id = transaction.id;
+                await Notification_1.default.create(newNotification);
+                await transaction.preload('sender');
+                await transaction.preload('receiver');
+                return transaction;
+            }
+            if (request.input("bank") === "deutschebank") {
+            }
             await transaction.save();
             await senderAccount.save();
             await receiverAccount.save();

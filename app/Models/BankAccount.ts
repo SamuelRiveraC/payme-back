@@ -15,6 +15,9 @@ export default class BankAccount extends BaseModel {
   public alias: string
 
   @column()
+  public bank: string
+
+  @column()
   public iban: string
 
   @column()

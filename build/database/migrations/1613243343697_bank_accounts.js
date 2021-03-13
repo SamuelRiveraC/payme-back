@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Schema_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/Schema"));
+const Schema_1 = __importDefault(require("@ioc:Adonis/Lucid/Schema"));
 class BankAccounts extends Schema_1.default {
     constructor() {
         super(...arguments);
@@ -12,8 +12,9 @@ class BankAccounts extends Schema_1.default {
     async up() {
         this.schema.createTable(this.tableName, (table) => {
             table.increments('id');
+            table.string('bank').notNullable();
             table.string('alias').notNullable();
-            table.string('iban').notNullable();
+            table.string('iban').notNullable().unique();
             table.string('bic').notNullable();
             table.string('primary').notNullable();
             table.float('balance').unsigned();
