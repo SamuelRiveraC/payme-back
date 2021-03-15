@@ -11,7 +11,8 @@ class Transactions extends Schema_1.default {
     }
     async up() {
         this.schema.createTable(this.tableName, (table) => {
-            table.increments('id');
+            table.increments("id").primary();
+            table.uuid("uuid");
             table.integer('user_sender_id').unsigned().references('id').inTable('users').onDelete('CASCADE');
             table.integer('user_receiver_id').unsigned().references('id').inTable('users').onDelete('CASCADE');
             table.float('amount').unsigned();

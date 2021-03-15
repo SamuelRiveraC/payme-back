@@ -13,9 +13,17 @@
 import 'reflect-metadata'
 import sourceMapSupport from 'source-map-support'
 import { Ignitor } from '@adonisjs/core/build/standalone'
+import { createServer } from "https";
+const fs = require('fs');
+
+const privateKey = fs.readFileSync('key.pem');
+const certificate = fs.readFileSync('cert.pem');
+const credentials = {key: privateKey, cert: certificate};
 
 sourceMapSupport.install({ handleUncaughtExceptions: false })
-
 new Ignitor(__dirname)
-  .httpServer()
-  .start()
+	.httpServer()
+	.start((handle) => {
+		return createServer(credentials, handle );
+	})
+//fallback to http, but https works now it seems xd somewhat

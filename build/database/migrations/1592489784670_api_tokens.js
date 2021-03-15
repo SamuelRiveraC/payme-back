@@ -15,7 +15,7 @@ class ApiTokens extends Schema_1.default {
             table.integer('user_id').unsigned().references('id').inTable('users').onDelete('CASCADE');
             table.string('name').notNullable();
             table.string('type').notNullable();
-            table.string('token', 64).notNullable();
+            table.text('token').notNullable();
             table.timestamp('created_at', { useTz: true }).notNullable();
             table.timestamp('expires_at', { useTz: true }).nullable();
         });

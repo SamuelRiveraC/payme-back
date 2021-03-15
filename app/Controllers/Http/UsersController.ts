@@ -17,13 +17,13 @@ export default class UsersController {
     return users
   }
 
-  // This is a bloated method. Easy to work with. Hard to scale
   public async getSelfData ({auth}: HttpContextContract) {
     const user = await auth.authenticate()
     
     /**
-     * OPEN BANKING - AIS API - RELOAD BANK BALANCE
+     * OPEN BANKING - AIS API - RELOAD BANK BALANCE - GET AUTH AND REFRESH
     **/
+
     await user.preload('bankAccounts')
 
     await user.preload('transactionsSent', (query) => {
@@ -42,22 +42,8 @@ export default class UsersController {
         query.preload('receiver')
       })
     })
-
-    /* 
-      GET AUTH AND REFRESH
-    */
-
-
-
     return user
   }
-
-
-
-
-
-
-
 
 
 

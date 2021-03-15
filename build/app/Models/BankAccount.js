@@ -32,6 +32,10 @@ __decorate([
 __decorate([
     Orm_1.column(),
     __metadata("design:type", String)
+], BankAccount.prototype, "bank", void 0);
+__decorate([
+    Orm_1.column(),
+    __metadata("design:type", String)
 ], BankAccount.prototype, "iban", void 0);
 __decorate([
     Orm_1.column(),

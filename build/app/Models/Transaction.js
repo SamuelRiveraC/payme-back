@@ -15,12 +15,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const luxon_1 = require("luxon");
 const Orm_1 = global[Symbol.for('ioc.use')]("Adonis/Lucid/Orm");
 const User_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/User"));
+const uuid_1 = require("uuid");
 class Transaction extends Orm_1.BaseModel {
+    static async createUUID(model) {
+        model.uuid = uuid_1.v4();
+    }
 }
 __decorate([
     Orm_1.column({ isPrimary: true }),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], Transaction.prototype, "id", void 0);
+__decorate([
+    Orm_1.column(),
+    __metadata("design:type", String)
+], Transaction.prototype, "uuid", void 0);
 __decorate([
     Orm_1.column(),
     __metadata("design:type", Number)
@@ -53,5 +61,11 @@ __decorate([
     Orm_1.column.dateTime({ autoCreate: true, autoUpdate: true }),
     __metadata("design:type", luxon_1.DateTime)
 ], Transaction.prototype, "updatedAt", void 0);
+__decorate([
+    Orm_1.beforeCreate(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Transaction]),
+    __metadata("design:returntype", Promise)
+], Transaction, "createUUID", null);
 exports.default = Transaction;
 //# sourceMappingURL=Transaction.js.map
