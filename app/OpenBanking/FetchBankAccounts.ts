@@ -1,56 +1,58 @@
-import Qs from "qs"
 import axios from "axios"
 import GetToken from "App/OpenBanking/GetToken"
+import RabobankRequestHeaderAccounts from 'App/OpenBanking/RabobankRequestHeaderAccounts'
+import { v4 as uuid } from 'uuid'
+import crypto from 'crypto'
+
 
 const IPADDRESS = "109.74.179.3" //"127.0.0.0"
-const DBN_SSN_ENCRYPTED = "ARxbvsVFZnYiYrkVCDOn1AE0EY955HQVMZwSOdV0eSg7QQ2kzfVIlY7Hr/D3"
 
+const crypto = require('crypto');
+const iv = crypto.randomBytes(12);
+const ssn = "31125461118"
+const key= Buffer.from(process.env.neonomics_raw_key, 'base64');
+const cipher = crypto.createCipheriv('aes-128-gcm', key, iv, { authTagLength:16 });
+let enc = Buffer.concat([cipher.update(ssn), cipher.final(), cipher.getAuthTag()]);
+const DBN_SSN_ENCRYPTED = Buffer.concat([iv, enc]).toString('base64')
 
 export default async function GetBankAccounts (user,Bank) {
 
     switch (Bank) {
       case "deutschebank":
-        let DB_access_token = await GetToken(user,"access_token",Bank) 
-        return await axios.get( "https://simulator-api.db.com/gw/dbapi/v1/cashAccounts",
+        let DB_access_token = await GetToken(user,"auth_token",Bank) 
+        let responseDB = await axios.get( "https://simulator-api.db.com/gw/dbapi/v1/cashAccounts",
           {headers: { Authorization: `Bearer ${DB_access_token}` }}
-        ).then( (response) => { return response.data })
-        .catch((error) => {return error.response.data });
+        ).then( (response) => { return response })
+        .catch((error) => {return error.response });
+        if (responseDB === undefined)
+            return {error:504, message:"We couldn't fetch the bank accounts, please try again"}
+        if ("errorCode" in response.data)
+            return {error:500, message:responseDB.data.errorCode+": "+responseDB.data.message}
+        return responseDB.data
         break;       
 
       case "rabobank":
-        const { uuidv4 } = require('uuidv4');
-      /*
-        const crypto = require('crypto');
-        var hash = crypto.createHash('sha512');
+          let RB_access_token = await GetToken(user,"auth_token",Bank) 
+          let responseRB = await axios.get( "https://api-sandbox.rabobank.nl/openapi/sandbox/payments/account-information/ais/accounts",
+          await RabobankRequestHeaderAccounts(RB_access_token))
+          .then( (response) => { return response })
+          .catch((error) => { return error.response });
 
-        var digest = Buffer.from( hash.update({}, 'utf-8' ) ).toString('base64');
+          if (responseRB === undefined)
+            return {error:504, message:"We couldn't fetch the bank accounts, please try again"}
+          if ("errorCode" in responseRB.data)
+              return {error:500, message:responseRB.data.errorCode+": "+responseRB.data.message}
+          
+          let bankAccounts = responseRB.data.accounts
 
-        gen_hash= data.digest('hex');
-
-        console.log("hash : " + gen_hash);
-      */
-
-        //AIS = date+digest+x-request-id
-        let digest = Buffer.from("").toString('base64')
-
-
-        let RB_access_token = await GetToken(user,"access_token",Bank) 
-        return await axios.get( "https://api-sandbox.rabobank.nl/openapi/sandbox/payments/account-information/ais/accounts",
-          { headers: {
-              Authorization: `Bearer ${RB_access_token}`, 
-              accept: `application/json`, 
-              date: `${new Date().toUTCString()}`, 
-              // "psu-ip-address": ``, //There is no limit in amount of calls
-              "x-request-id": uuidv4(), // CREATE UUID ¿just because? 
-              "tpp-signature-certificate": process.env.rabobank_signing_cer,
-              "x-ibm-client-id": process.env.rabobank_client, 
-
-              digest: `sha-512=${digest}`,
-              signature: ``, //For description and examples check the documentation section.
-
-          } } //response.data.access_token
-          ).then( (response) => { return response.data })
-          .catch((error) => { return error.response.data });
+          for (const account of bankAccounts) {
+            let accountBalance = await axios.get( "https://api-sandbox.rabobank.nl/openapi/sandbox/payments/account-information/ais/accounts/"+account.resourceId+"/balances",
+              await RabobankRequestHeaderAccounts(RB_access_token))
+              .then( (response) => { return response.data })
+              .catch((error) => { return error.response.data })
+            account.balance = accountBalance.balances[0].balanceAmount 
+          }
+          return bankAccounts
         break;
 
       default: //danger Should be neonomics banks 
@@ -58,16 +60,24 @@ export default async function GetBankAccounts (user,Bank) {
         let auth_token = await GetToken(user,"auth_token","Neonomics") 
         let sessionId = await GetToken(user,"sessionId",Bank) 
 
-        return await axios.get( "https://sandbox.neonomics.io/ics/v3/accounts",
+        let responseN = await axios.get( "https://sandbox.neonomics.io/ics/v3/accounts",
           { headers: { Authorization: `Bearer ${auth_token}`,
             Accept: `application/json`, "x-device-id": "PayMe-"+user.id,
             "x-psu-ip-address":IPADDRESS, "x-session-id": sessionId
           , "x-psu-id": DBN_SSN_ENCRYPTED
           }}).then( (response) => {
-            return response.data // should return bank acccounts
+            return response // should return bank acccounts
           }).catch((error) => {
-            return error.response.data
+            return error.response
           });
+
+        if (responseN === undefined)
+            return {error:504, message:"We couldn't fetch the bank accounts, please try again"}
+        if ("errorCode" in responseN.data)
+            return {error:500, message:responseN.data.errorCode+": "+responseN.data.message}
+        return responseN.data
+
+
         break;
     }
 

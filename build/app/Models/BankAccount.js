@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const luxon_1 = require("luxon");
-const Orm_1 = require("@ioc:Adonis/Lucid/Orm");
+const Orm_1 = global[Symbol.for('ioc.use')]("Adonis/Lucid/Orm");
 class BankAccount extends Orm_1.BaseModel {
 }
 __decorate([
@@ -29,6 +29,10 @@ __decorate([
     Orm_1.column(),
     __metadata("design:type", String)
 ], BankAccount.prototype, "alias", void 0);
+__decorate([
+    Orm_1.column(),
+    __metadata("design:type", String)
+], BankAccount.prototype, "bank", void 0);
 __decorate([
     Orm_1.column(),
     __metadata("design:type", String)

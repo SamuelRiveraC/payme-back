@@ -22,11 +22,10 @@
     "@adonisjs/core",
     "@adonisjs/auth",
     "@adonisjs/lucid",
-    "@adonisjs/session",
-    "./providers/OpenBankingProvider"
+    "@adonisjs/session"
   ],
   "aceProviders": [
     "@adonisjs/repl"
   ],
-  "lastCompiledAt": "2021-03-12T15:28:33.967Z"
+  "lastCompiledAt": "2021-03-13T13:59:51.913Z"
 }

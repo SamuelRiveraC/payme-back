@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Schema_1 = __importDefault(require("@ioc:Adonis/Lucid/Schema"));
+const Schema_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/Schema"));
 class ApiTokens extends Schema_1.default {
     constructor() {
         super(...arguments);
@@ -15,7 +15,7 @@ class ApiTokens extends Schema_1.default {
             table.integer('user_id').unsigned().references('id').inTable('users').onDelete('CASCADE');
             table.string('name').notNullable();
             table.string('type').notNullable();
-            table.string('token', 64).notNullable();
+            table.text('token').notNullable();
             table.timestamp('created_at', { useTz: true }).notNullable();
             table.timestamp('expires_at', { useTz: true }).nullable();
         });

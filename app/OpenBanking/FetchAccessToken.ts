@@ -5,7 +5,7 @@ export default async function FetchAccessToken (user,BANK,CODE) {
 
     switch (BANK) {
       case "deutschebank":
-        return await axios.post( "https://simulator-api.db.com/gw/oidc/token", 
+        let deutschebankResponse = await axios.post( "https://simulator-api.db.com/gw/oidc/token", 
         	Qs.stringify({
         	  grant_type: 'authorization_code',
         	  code: CODE,
@@ -18,11 +18,12 @@ export default async function FetchAccessToken (user,BANK,CODE) {
         		}
         	}).then( (response) => { return response.data
 			}).catch((error) => {return error.response.data});
+            if (deutschebankResponse === undefined)
+                return {error:504, message:"We couldn't log in Deutschebank, Please try again"}
+            return deutschebankResponse
           break;       
-
-
       case "rabobank":
-        return await axios.post( "https://api-sandbox.rabobank.nl/openapi/sandbox/oauth2/token", 
+        let rabobankResponse = await axios.post( "https://api-sandbox.rabobank.nl/openapi/sandbox/oauth2/token", 
         	Qs.stringify({
         	  grant_type: 'authorization_code',
         	  code: CODE,
@@ -35,16 +36,16 @@ export default async function FetchAccessToken (user,BANK,CODE) {
         		}
         	}).then( (response) => { return response.data
             }).catch((error) => {return error.response.data});
+            if (rabobankResponse === undefined)
+                return {error:504, message:"We couldn't log in Deutschebank, Please try again"}
+            return rabobankResponse
           break;
-
-
-
-
-
       case "neonomics":
-          //Already handled my dude
+          return {error:504, message:"You accessed Neonomics as you would with other APIs, (This error shouldn't show up)"}
         break;
+
       default:
+        return {error:400, message:"Bank not supported"}
         break;
     }
 }

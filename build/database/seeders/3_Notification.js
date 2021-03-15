@@ -3,8 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Seeder_1 = __importDefault(require("@ioc:Adonis/Lucid/Seeder"));
-const Notification_1 = __importDefault(require("App/Models/Notification"));
+const Seeder_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/Seeder"));
+const Notification_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/Notification"));
 class NotificationSeeder extends Seeder_1.default {
     async run() {
         await Notification_1.default.updateOrCreateMany("transaction_id", [

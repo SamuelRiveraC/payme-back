@@ -17,7 +17,7 @@ export default class UsersController {
     return users
   }
 
-  public async refreshData ({auth}: HttpContextContract) {
+  public async getSelfData ({auth}: HttpContextContract) {
     const user = await auth.authenticate()
     
     /**
@@ -42,16 +42,8 @@ export default class UsersController {
         query.preload('receiver')
       })
     })
-
     return user
   }
-
-
-
-
-
-
-
 
 
 

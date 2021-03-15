@@ -13,12 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const luxon_1 = require("luxon");
-const Hash_1 = __importDefault(require("@ioc:Adonis/Core/Hash"));
-const Orm_1 = require("@ioc:Adonis/Lucid/Orm");
-const Database_1 = __importDefault(require("@ioc:Adonis/Lucid/Database"));
-const BankAccount_1 = __importDefault(require("App/Models/BankAccount"));
-const Transaction_1 = __importDefault(require("App/Models/Transaction"));
-const Notification_1 = __importDefault(require("App/Models/Notification"));
+const Hash_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Hash"));
+const Orm_1 = global[Symbol.for('ioc.use')]("Adonis/Lucid/Orm");
+const Database_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/Database"));
+const BankAccount_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/BankAccount"));
+const Transaction_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/Transaction"));
+const Notification_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/Notification"));
 class User extends Orm_1.BaseModel {
     static async hashPassword(user) {
         if (user.$dirty.password) {
