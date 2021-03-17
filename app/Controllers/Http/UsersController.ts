@@ -6,8 +6,8 @@ import FetchTransactions from 'App/OpenBanking/FetchTransactions'
 export default class UsersController {
 
 
-  public async search ({ params}: HttpContextContract) {
-    const user = {id:1} //await auth.authenticate()
+  public async search ({auth, params}: HttpContextContract) {
+    const user = await auth.authenticate()
 
     const users = await User.query()
     .where( function (user : User) {
@@ -50,7 +50,12 @@ export default class UsersController {
       return account.primary === "true"
     })
 
-    let transactionsAPI = await FetchTransactions(user,primaryAccount.serialize())
+    let transactionsAPI = []
+    if (primaryAccount !== undefined && primaryAccount.bank !== "payme") {
+      primaryAccount = primaryAccount.serialize()
+      transactionsAPI = await FetchTransactions(user, primaryAccount)
+    }
+
 
     return {...user.serialize(), transactionsAPI:transactionsAPI}
   }

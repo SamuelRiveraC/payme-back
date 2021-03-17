@@ -9,45 +9,69 @@ class UserSeeder extends Seeder_1.default {
     async run() {
         await User_1.default.updateOrCreateMany("email", [
             {
-                email: 'DuPont@test.com',
-                phone: '+320001111',
+                email: 'Angela@test.com',
+                phone: '+100000001',
                 password: 'secret',
-                first_name: 'Jean',
-                last_name: 'DuPont',
-                slug: 'DuPont'
+                first_name: 'Angela',
+                last_name: 'Deutschbank',
+                profile_picture: 'https://via.placeholder.com/160/29363D/EDF4FC?text=AG'
             },
             {
-                email: 'Mustermann@gmail.com',
-                phone: '+490001111',
+                email: 'Adam@test.com',
+                phone: '+100000002',
                 password: 'secret',
-                first_name: 'Max',
-                last_name: 'Mustermann',
-                slug: 'Mustermann'
+                first_name: 'Adam',
+                last_name: 'Deutschbank',
+                profile_picture: 'https://via.placeholder.com/160/29363D/EDF4FC?text=AM'
             },
             {
-                email: 'Jansen@test.com',
-                phone: '+310001111',
+                email: 'Sophie@test.com',
+                phone: '+100000003',
                 password: 'secret',
-                first_name: 'Jan',
-                last_name: 'Jansen',
-                slug: 'Jansen'
+                first_name: 'Sophie',
+                last_name: 'Rabobank',
+                profile_picture: 'https://via.placeholder.com/160/29363D/EDF4FC?text=ST'
             },
             {
-                email: 'Smith@test.com',
-                phone: '+440001111',
+                email: 'Lucas@test.com',
+                phone: '+100000004',
                 password: 'secret',
-                first_name: 'John',
-                last_name: 'Smith',
-                slug: 'Smith'
+                first_name: 'Lucas',
+                last_name: 'Rabobank',
+                profile_picture: 'https://via.placeholder.com/160/29363D/EDF4FC?text=LT'
+            },
+            {
+                email: 'Emma@test.com',
+                phone: '+100000005',
+                password: 'secret',
+                first_name: 'Emma',
+                last_name: 'Test',
+                profile_picture: 'https://via.placeholder.com/160/29363D/EDF4FC?text=JP'
+            },
+            {
+                email: 'Bram@test.com',
+                phone: '+100000006',
+                password: 'secret',
+                first_name: 'Bram',
+                last_name: 'Test',
+                profile_picture: 'https://via.placeholder.com/160/29363D/EDF4FC?text=BT'
             },
             {
                 email: 'Ozdemir@test.com',
-                phone: '+310002222',
+                phone: '+100000007',
                 password: 'secret',
                 first_name: 'Suayip',
                 last_name: 'Ozdemir',
-                slug: 'Ozdemir'
-            }
+                profile_picture: 'https://via.placeholder.com/160/29363D/EDF4FC?text=SO'
+            },
+            {
+                email: 'Ella@test.com',
+                phone: '+100000008',
+                password: 'secret',
+                first_name: 'Ella',
+                last_name: 'PayMe',
+                profile_picture: 'https://via.placeholder.com/160/29363D/EDF4FC?text=ET'
+            },
         ]);
     }
 }

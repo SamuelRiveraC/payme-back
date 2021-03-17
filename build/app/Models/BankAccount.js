@@ -23,6 +23,10 @@ __decorate([
 ], BankAccount.prototype, "user_id", void 0);
 __decorate([
     Orm_1.column(),
+    __metadata("design:type", String)
+], BankAccount.prototype, "resource_id", void 0);
+__decorate([
+    Orm_1.column(),
     __metadata("design:type", Number)
 ], BankAccount.prototype, "balance", void 0);
 __decorate([

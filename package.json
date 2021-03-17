@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "node ace build --production",
+    "build": "node ace build --production && cp -a build/. ../payme-build && cp -a package.json ../payme-build",
     "start": "node server.js",
     "dev": "node ace serve --watch"
   },

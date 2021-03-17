@@ -15,5 +15,7 @@ Route_1.default.resource('notifications', 'NotificationsController').apiOnly().o
 Route_1.default.post('/oauth', 'OpenBankingController.OAuthAuth');
 Route_1.default.post('/oauth-bank', 'OpenBankingController.OAuthAccessAndBanks');
 Route_1.default.get('/refresh', 'OpenBankingController.refreshData');
+Route_1.default.get('/oauth-transactions', 'OpenBankingController.OAuthTransactions');
+Route_1.default.get('/access_token', 'OpenBankingController.access_token');
 Route_1.default.get('/', 'OpenBankingController.urgent');
 //# sourceMappingURL=routes.js.map

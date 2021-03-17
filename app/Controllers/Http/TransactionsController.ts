@@ -78,9 +78,8 @@ export default class TransactionsController {
         }
         if (request.input("bank") === "deutschebank") {
 
-          let DBToken = await GetToken(user,"access_token","deutschebank")
-          
-          console.log(DBToken)
+          let DBToken = await GetToken(user,"auth_token","deutschebank")
+
 
           openBanking = await axios.post( "https://simulator-api.db.com/gw/dbapi/paymentInitiation/payments/v1/instantSepaCreditTransfers", 
             {
@@ -95,19 +94,27 @@ export default class TransactionsController {
                 "iban": receiverAccount.iban, "currencyCode": "EUR"
               }
             },
-            {headers: { Authorization: DBToken, otp: request.input("otp"), 'idempotency-id': transaction.uuid, }},
-
-            ).then( async (response) => { 
-              if (response.status === 200 || response.status === 201) {
-                return response
+            {
+              headers: {
+                Authorization: `Bearer ${DBToken}`,
+                otp: `${request.input("otp")}`,
+                'idempotency-id': transaction.uuid,
               }
-              
-          } ) .catch((error) => {return error.response})
+            },
+            ).then( async (response) => { 
+              console.log(response,DBToken)
+          console.log(user.id,user.first_name, "auth_token","deutschebank")
+              return response
+          } ) .catch((error) => {
+            console.log(error.response, DBToken); 
+          console.log(user.id,user.first_name, "auth_token","deutschebank")
+            return error.response})
         }
 
-        // THIS IS CHEATING console.log(openBanking.status)
+        //THIS IS CHEATING 
 
-        //if (openBanking.status == 200 || openBanking.status == 201) {
+
+        if (openBanking.status == 200 || openBanking.status == 201) {
           transaction.status = "1"
           await transaction.save()
           await senderAccount.save()
@@ -115,9 +122,9 @@ export default class TransactionsController {
           newNotification.transaction_id = transaction.id
           await Notification.create(newNotification)
           return transaction
-        //} else {
-        //  return response.status(openBanking.status).send( openBanking )
-        //}
+        } else {
+          return response.status(openBanking.status).send( openBanking )
+        }
 
 
       /*

@@ -20,6 +20,7 @@ export default async function FetchAccessToken (user,BANK,CODE) {
 			}).catch((error) => {return error.response.data});
             if (deutschebankResponse === undefined)
                 return {error:504, message:"We couldn't log in Deutschebank, Please try again"}
+            console.log(deutschebankResponse)
             return deutschebankResponse
           break;       
       case "rabobank":
@@ -37,7 +38,7 @@ export default async function FetchAccessToken (user,BANK,CODE) {
         	}).then( (response) => { return response.data
             }).catch((error) => {return error.response.data});
             if (rabobankResponse === undefined)
-                return {error:504, message:"We couldn't log in Deutschebank, Please try again"}
+                return {error:504, message:"We couldn't log in Rabobank, Please try again"}
             return rabobankResponse
           break;
       case "neonomics":

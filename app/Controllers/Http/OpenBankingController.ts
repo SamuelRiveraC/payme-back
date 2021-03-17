@@ -55,12 +55,8 @@ export default class OpenBankingController {
 
   public async urgent ({}: HttpContextContract) {
     let user = {id:1, first_name:"Angela", last_name:"Deutschebank" }
-    return user
-
-    //BankAccount => primary bank
-
-    //let BankAccount = {bank:"deutschebank", iban: "DE10010000000000007658"}
-    //let t1 = await FetchTransactions(user,BankAccount)
+    let BankAccount = {bank:"deutschebank", iban: "DE10010000000000007659"}
+    return await FetchTransactions(user,BankAccount)
     //BankAccount = {resource_id:"Tkw4MFJBQk8xMTI3MDAwMDAyOkVVUg",bank:"rabobank", iban: "NL80RABO1127000002"}
     //let t2 = await FetchTransactions(user,BankAccount)
     //let BankAccount = {resource_id:"MTIwMzYyMTI1MzM",bank:"DNB", iban: "NO3312036212533"}
@@ -183,8 +179,7 @@ export default class OpenBankingController {
 
         if (bank === "deutschebank") {
           for (const [index, account] of GetBankAccounts.entries()) {
-            await BankAccount.updateOrCreate({iban: account.iban}, {
-              user_id: user.id,
+            await BankAccount.updateOrCreate({iban: account.iban, user_id: user.id}, {
               bank: "deutschebank",
               alias: `${account.productDescription} (${user.last_name})`,
               balance: account.currentBalance,
@@ -194,8 +189,7 @@ export default class OpenBankingController {
           }
         } else if (bank === "rabobank") {
           for (const [index, account] of GetBankAccounts.entries()) {
-            await BankAccount.updateOrCreate({iban: account.iban}, {
-              user_id: user.id,
+            await BankAccount.updateOrCreate({iban: account.iban, user_id: user.id}, {
               resource_id: account.resourceId,
               bank: "rabobank",
               alias: `${account.ownerName} (${user.last_name})`,
@@ -221,8 +215,7 @@ export default class OpenBankingController {
       
 
         for (const [index, account] of GetBankAccounts.entries()) {
-          await BankAccount.updateOrCreate({iban: account.iban}, {
-            user_id: user.id,
+          await BankAccount.updateOrCreate({iban: account.iban, user_id: user.id}, {
             resource_id: account.id,
             bank: bank,
             alias: `${account.accountName} (${user.last_name})`,

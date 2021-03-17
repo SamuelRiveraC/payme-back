@@ -4,18 +4,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const User_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/User"));
+const FetchTransactions_1 = __importDefault(global[Symbol.for('ioc.use')]("App/OpenBanking/FetchTransactions"));
 class UsersController {
     async search({ params }) {
+        const user = { id: 1 };
         const users = await User_1.default.query()
-            .where('email', 'like', `%${params.id}%`)
-            .orWhere('phone', 'like', `%${params.id}%`)
-            .whereHas('bankAccounts', (query) => {
+            .where(function (user) {
+            user.where('email', 'like', `%${params.id}%`)
+                .orWhere('phone', 'like', `%${params.id}%`)
+                .orWhere('first_name', 'like', `%${params.id}%`)
+                .orWhere('last_name', 'like', `%${params.id}%`);
+        })
+            .andWhereNot('id', user.id)
+            .andWhereHas('bankAccounts', (query) => {
             query.where('primary', "true");
-        }).preload("bankAccounts");
+        })
+            .preload("bankAccounts");
         return users;
     }
     async getSelfData({ auth }) {
-        const user = await auth.authenticate();
+        let user = await auth.authenticate();
         await user.preload('bankAccounts');
         await user.preload('transactionsSent', (query) => {
             query.where('status', 1);
@@ -33,7 +41,15 @@ class UsersController {
                 query.preload('receiver');
             });
         });
-        return user;
+        let primaryAccount = user.bankAccounts.find((account) => {
+            return account.primary === "true";
+        });
+        let transactionsAPI = [];
+        if (primaryAccount !== undefined && primaryAccount.bank !== "payme") {
+            primaryAccount = primaryAccount.serialize();
+            transactionsAPI = await FetchTransactions_1.default(user, primaryAccount);
+        }
+        return { ...user.serialize(), transactionsAPI: transactionsAPI };
     }
     async store({ request, auth }) {
         const savePayload = request.all();

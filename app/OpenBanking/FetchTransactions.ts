@@ -20,10 +20,13 @@ export default async function FetchTransactions(user, BankAccount) {
     switch (BankAccount.bank) {
       case "deutschebank":
         let DB_access_token = await GetToken(user,"auth_token",BankAccount.bank) 
-        let responseDB = await axios.get( "https://simulator-api.db.com/gw/dbapi/banking/transactions/v2?iban="+BankAccount.iban,
-          {headers: { Authorization: `Bearer ${DB_access_token}` }}
-        ).then( (response) => { return response })
-        .catch((error) => {return error.response });
+        let responseDB = await axios.get(
+          "https://simulator-api.db.com:443/gw/dbapi/banking/transactions/v2/?iban="+BankAccount.iban+"&sortBy=bookingDate%5BDESC%5D&limit=10&offset=0"
+
+          , {headers: { Authorization: `Bearer ${DB_access_token}` }}
+        ).then( (response) => { console.log(response); return response })
+        .catch((error) => {console.log(error.response); return error.response });
+
         if (responseDB === undefined)
             return [] //{error:504, message:"We couldn't fetch the transactions, please try again"}
         if ("code" in responseDB.data)
