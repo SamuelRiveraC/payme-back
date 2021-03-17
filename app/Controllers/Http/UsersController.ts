@@ -1,29 +1,32 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
 import User from 'App/Models/User'
+import FetchTransactions from 'App/OpenBanking/FetchTransactions'
 
 export default class UsersController {
 
 
-  public async search ({params}: HttpContextContract) {
-    //IGNORE OWN USER
-    const users = await User.query()
-    .where('email', 'like', `%${params.id}%`)
-    .orWhere('phone', 'like', `%${params.id}%`)
-    .whereHas('bankAccounts', (query) => {
-      query.where('primary', "true")
-    }).preload("bankAccounts") 
+  public async search ({ params}: HttpContextContract) {
+    const user = {id:1} //await auth.authenticate()
 
+    const users = await User.query()
+    .where( function (user : User) {
+      user.where('email', 'like', `%${params.id}%`)
+      .orWhere('phone', 'like', `%${params.id}%`)
+      .orWhere('first_name', 'like', `%${params.id}%`)
+      .orWhere('last_name', 'like', `%${params.id}%`)
+    })
+    .andWhereNot('id', user.id)
+    .andWhereHas('bankAccounts', (query) => {
+      query.where('primary', "true")
+    })
+    .preload("bankAccounts") 
     return users
   }
 
   public async getSelfData ({auth}: HttpContextContract) {
-    const user = await auth.authenticate()
+    let user = await auth.authenticate()
     
-    /**
-     * OPEN BANKING - AIS API - RELOAD BANK BALANCE - GET AUTH AND REFRESH
-    **/
-
     await user.preload('bankAccounts')
 
     await user.preload('transactionsSent', (query) => {
@@ -42,7 +45,14 @@ export default class UsersController {
         query.preload('receiver')
       })
     })
-    return user
+
+    let primaryAccount = user.bankAccounts.find((account)=> {
+      return account.primary === "true"
+    })
+
+    let transactionsAPI = await FetchTransactions(user,primaryAccount.serialize())
+
+    return {...user.serialize(), transactionsAPI:transactionsAPI}
   }
 
 
@@ -81,7 +91,6 @@ export default class UsersController {
 
 
   public async show ({auth, params, response}: HttpContextContract) {
-
     const user = await User.findByOrFail('slug',params.id)
     const requestUser = await auth.authenticate();
     if (user.id === requestUser.id) {

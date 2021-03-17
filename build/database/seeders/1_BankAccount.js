@@ -10,6 +10,7 @@ class BankAccountSeeder extends Seeder_1.default {
         await BankAccount_1.default.updateOrCreateMany("iban", [
             {
                 user_id: "1",
+                bank: "payme",
                 alias: "Checking (DuPont)",
                 balance: "1000",
                 iban: 'FR0150000000000000000000',
@@ -18,6 +19,7 @@ class BankAccountSeeder extends Seeder_1.default {
             },
             {
                 user_id: "2",
+                bank: "payme",
                 alias: "Checking (Mustermann)",
                 balance: "1000",
                 iban: 'DE0250000000000000000000',
@@ -26,6 +28,7 @@ class BankAccountSeeder extends Seeder_1.default {
             },
             {
                 user_id: "3",
+                bank: "payme",
                 alias: "Checking (Jansen)",
                 balance: "1000",
                 iban: 'NL0350000000000000000000',
@@ -34,6 +37,7 @@ class BankAccountSeeder extends Seeder_1.default {
             },
             {
                 user_id: "4",
+                bank: "payme",
                 alias: "Checking (Smith)",
                 balance: "1000",
                 iban: 'UK0450000000000000000000',
@@ -42,6 +46,7 @@ class BankAccountSeeder extends Seeder_1.default {
             },
             {
                 user_id: "4",
+                bank: "payme",
                 alias: "Savings (Smith)",
                 balance: "10000",
                 iban: 'UK0400000000000000001111',
@@ -50,6 +55,7 @@ class BankAccountSeeder extends Seeder_1.default {
             },
             {
                 user_id: "5",
+                bank: "payme",
                 alias: "Checking (Ozdemir)",
                 balance: "10000",
                 iban: 'NL0150000000000000000000',
