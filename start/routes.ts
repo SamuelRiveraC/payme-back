@@ -1,40 +1,3 @@
-/*
-
-┌──────────────────────────────┬────────────────────────────────┬────────────┐
-│ ROUTES                       │ HANDLER                        │ Middleware │
-├──────────────────────────────┼────────────────────────────────┼────────────┤
-│ POST /users                  │ UsersController.store          │ Auth       │
-├──────────────────────────────┼────────────────────────────────┼────────────┤
-│ GET /users/:id               │ UsersController.show           │ Auth       │
-├──────────────────────────────┼────────────────────────────────┼────────────┤
-│ PUT,PATCH /users/:id         │ UsersController.update         │ Auth       │
-├──────────────────────────────┼────────────────────────────────┼────────────┤
-│ GET /users/search/:id        │ UsersController.search         │ Auth       │
-├──────────────────────────────┼────────────────────────────────┼────────────┤
-│ GET /auth                    │ UsersController.getSelfData    │ Auth       │
-├──────────────────────────────┼────────────────────────────────┼────────────┤
-│ POST /login                  │ UsersController.login          │            │
-├──────────────────────────────┼────────────────────────────────┼────────────┤
-│ GET /logout                  │ UsersController.logout         │ Auth       │
-├──────────────────────────────┼────────────────────────────────┼────────────┤
-│ POST /transactions           │ TransactionsController.store   │ Auth       │
-├──────────────────────────────┼────────────────────────────────┼────────────┤
-│ PUT,PATCH /transactions/:id  │ TransactionsController.update  │ Auth       │
-├──────────────────────────────┼────────────────────────────────┼────────────┤
-│ POST /bank_accounts          │ BankAccountsController.store   │ Auth       │
-├──────────────────────────────┼────────────────────────────────┼────────────┤
-│ GET /bank_accounts/:id       │ BankAccountsController.show    │ Auth       │
-├──────────────────────────────┼────────────────────────────────┼────────────┤
-│ PUT,PATCH /bank_accounts/:id │ BankAccountsController.update  │ Auth       │
-├──────────────────────────────┼────────────────────────────────┼────────────┤
-│ DELETE /bank_accounts/:id    │ BankAccountsController.destroy │ Auth       │
-├──────────────────────────────┼────────────────────────────────┼────────────┤
-│ PUT,PATCH /notifications/:id │ NotificationsController.update │ Auth       │
-└──────────────────────────────┴────────────────────────────────┴────────────┘
-
-*/
-
-
 import Route from '@ioc:Adonis/Core/Route'
 
 Route.resource('users', 'UsersController').apiOnly().except(["index","destroy"])
@@ -52,6 +15,9 @@ Route.resource('notifications', 'NotificationsController').apiOnly().only(['upda
 Route.post('/oauth', 'OpenBankingController.OAuthAuth')
 Route.post('/oauth-bank', 'OpenBankingController.OAuthAccessAndBanks')
 Route.get('/refresh', 'OpenBankingController.refreshData')
+Route.get('/oauth-transactions', 'OpenBankingController.OAuthTransactions')
+Route.get('/access_token', 'OpenBankingController.access_token')
+
 
 
 // TEMPORAL

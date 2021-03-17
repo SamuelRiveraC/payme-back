@@ -26,7 +26,7 @@ export default async function GetBankAccounts (user,Bank) {
         .catch((error) => {return error.response });
         if (responseDB === undefined)
             return {error:504, message:"We couldn't fetch the bank accounts, please try again"}
-        if ("errorCode" in response.data)
+        if ("errorCode" in responseDB.data)
             return {error:500, message:responseDB.data.errorCode+": "+responseDB.data.message}
         return responseDB.data
         break;       

@@ -9,6 +9,9 @@ export default class BankAccount extends BaseModel {
   public user_id: number
 
   @column()
+  public resource_id: string
+
+  @column()
   public balance: number
 
   @column()
