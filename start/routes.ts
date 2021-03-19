@@ -14,8 +14,8 @@ Route.resource('notifications', 'NotificationsController').apiOnly().only(['upda
 
 Route.post('/oauth', 'OpenBankingController.OAuthAuth')
 Route.post('/oauth-bank', 'OpenBankingController.OAuthAccessAndBanks')
+Route.post('/oauth-transactions', 'OpenBankingController.OAuthTransactions')
 Route.get('/refresh', 'OpenBankingController.refreshData')
-Route.get('/oauth-transactions', 'OpenBankingController.OAuthTransactions')
 Route.get('/access_token', 'OpenBankingController.access_token')
 
 

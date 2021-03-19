@@ -1,7 +1,9 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
 import User from 'App/Models/User'
+import BankAccount from 'App/Models/BankAccount'
 import FetchTransactions from 'App/OpenBanking/FetchTransactions'
+import FetchBankAccounts from 'App/OpenBanking/FetchBankAccounts'
 
 export default class UsersController {
 
@@ -53,8 +55,23 @@ export default class UsersController {
     let transactionsAPI = []
     if (primaryAccount !== undefined && primaryAccount.bank !== "payme") {
       primaryAccount = primaryAccount.serialize()
+
+      let GetBankAccounts = await FetchBankAccounts(user, primaryAccount.bank)
+      if(GetBankAccounts.length > 0) {
+        for (const [index, account] of GetBankAccounts.entries()) {
+          if (primaryAccount.iban === account.iban) {
+            await BankAccount.updateOrCreate({iban: account.iban, user_id: user.id}, {
+              balance: account.currentBalance,
+            })
+          }
+        }
+      }
+
       transactionsAPI = await FetchTransactions(user, primaryAccount)
     }
+
+    //can i preload again?
+    await user.preload('bankAccounts')
 
 
     return {...user.serialize(), transactionsAPI:transactionsAPI}
@@ -160,23 +177,48 @@ export default class UsersController {
     /**
      * OPEN BANKING - AIS API - RELOAD BANK BALANCE
     **/
-    await user.preload('bankAccounts')
-    await user.preload('transactionsSent', (query) => {
-      query.where('status', 1)
-      query.preload('sender')
-      query.preload('receiver')
-    })
-    await user.preload('transactionsReceived', (query) => {
-      query.where('status', 1)
-      query.preload('sender')
-      query.preload('receiver')
-    })
-    await user.preload('notifications', (query) => {
-      query.preload('transaction', (query) => {
+      await user.preload('bankAccounts')
+  
+      await user.preload('transactionsSent', (query) => {
+        query.where('status', 1)
         query.preload('sender')
         query.preload('receiver')
       })
-    })
+      await user.preload('transactionsReceived', (query) => {
+        query.where('status', 1)
+        query.preload('sender')
+        query.preload('receiver')
+      })
+      await user.preload('notifications', (query) => {
+        query.preload('transaction', (query) => {
+          query.preload('sender')
+          query.preload('receiver')
+        })
+      })
+  
+      let primaryAccount = user.bankAccounts.find((account)=> {
+        return account.primary === "true"
+      })
+  
+      let transactionsAPI = []
+      if (primaryAccount !== undefined && primaryAccount.bank !== "payme") {
+        primaryAccount = primaryAccount.serialize()
+  
+        let GetBankAccounts = await FetchBankAccounts(user, primaryAccount.bank)
+        if(GetBankAccounts.length > 0) {
+          for (const [index, account] of GetBankAccounts.entries()) {
+            if (primaryAccount.iban === account.iban) {
+              await BankAccount.updateOrCreate({iban: account.iban, user_id: user.id}, {
+                balance: account.currentBalance,
+              })
+            }
+          }
+        }
+  
+      }
+
+    //can i preload again?
+    await user.preload('bankAccounts')
 
     return { ...token.toJSON(), user }
   }

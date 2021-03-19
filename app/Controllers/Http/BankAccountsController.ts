@@ -29,6 +29,7 @@ export default class BankAccountsController {
 
       return await BankAccount.create({
         user_id: user.id,
+        bank: "payme",
         alias: `PayMe Test Account (${user.last_name})`,
         balance: 1000.00,
         iban: `PMXX ${Date.now()}${(Math.random() * (9999999 - 999999) + 999999).toFixed()}`, 

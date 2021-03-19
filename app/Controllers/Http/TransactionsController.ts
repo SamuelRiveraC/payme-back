@@ -54,12 +54,15 @@ export default class TransactionsController {
       if (receiverAccount == null) {
         return response.status(401).send( {code:"E_RECEIVER_NO_BANK_ACCOUNT"} )
       }
-
       if (senderAccount.balance < newTransaction.amount) {
         return response.status(401).send( {code:"E_INSUFFICIENT_FUNDS"} )
       }
       senderAccount.balance = senderAccount.balance - newTransaction.amount
       receiverAccount.balance = receiverAccount.balance + newTransaction.amount
+
+
+
+
 
       const transaction = await Transaction.create(newTransaction)
       await transaction.preload('sender')

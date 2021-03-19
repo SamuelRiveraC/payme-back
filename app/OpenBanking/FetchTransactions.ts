@@ -24,22 +24,41 @@ export default async function FetchTransactions(user, BankAccount) {
           "https://simulator-api.db.com:443/gw/dbapi/banking/transactions/v2/?iban="+BankAccount.iban+"&sortBy=bookingDate%5BDESC%5D&limit=10&offset=0"
 
           , {headers: { Authorization: `Bearer ${DB_access_token}` }}
-        ).then( (response) => { console.log(response); return response })
-        .catch((error) => {console.log(error.response); return error.response });
+        ).then( (response) => { return response })
+        .catch((error) => { return error.response });
 
-        if (responseDB === undefined)
+        console.log(responseDB.data)
+
+        if (responseDB.data === undefined)
             return [] //{error:504, message:"We couldn't fetch the transactions, please try again"}
         if ("code" in responseDB.data)
             return [] //{error:500, message:responseDB.data.code+": "+responseDB.data.message}
         if (responseDB.data.transactions === undefined)
             return [] //{error:500, message:"We couldn't fetch the transactions, please try again"}
+        
+
+        /*{
+          originIban: 'DE10010000000000007706',
+          amount: 69,
+          counterPartyName: 'Tom Winter',
+          counterPartyIban: 'DE10010000000000007659',
+          bookingDate: '2021-03-19',
+          currencyCode: 'EUR',
+          paymentIdentification: 'RTEeab2a1c1-a4e1-4a29-aa4d-44cff0727bdb',
+          id: "something like a base64 but isnt"
+        }*/
 
         let transactionsDB = []
         for (let [index,transaction] of responseDB.data.transactions.entries()) {
+          let fetch_type = transaction.amount >= 0 ?"credit":"debit"
+
+
+
         	transactionsDB.push({
-        		fetch_type: transaction.amount >= 0 ?"credit":"debit" ,
+            id: transaction.paymentIdentification.replace("RTE",""),
+        		fetch_type:  fetch_type,
             party: transaction.counterPartyName, 
-        		amount: transaction.amount >= 0 ? transaction.amount : transaction.amount *-1,
+        		amount: transaction.amount >= 0 ? transaction.amount : transaction.amount *-1, //Always show a positive number
         		status: "1",
         		created_at: transaction.bookingDate,
         		updated_at: transaction.bookingDate
@@ -56,15 +75,35 @@ export default async function FetchTransactions(user, BankAccount) {
           await RabobankRequestHeaderAccounts(RB_access_token))
           .then( (response) => { return response })
           .catch((error) => { return error.response });
-          console.log(responseRB.data)
+
+          console.log(responseRB.data.transactions.booked[0])
+
           if (responseRB === undefined)
             return [] //return {error:504, message:"We couldn't fetch the transactions, please try again"}
           if ("httpCode" in responseRB.data && responseRB.data.httpCode != 200)
             return [] //return {error:responseRB.data.httpCode, message:responseRB.data.httpCode+": "+responseRB.data.message}
 
+          /*{
+            entryReference: '8860',
+            bookingDate: '2021-03-18',
+            valueDate: '2021-03-18',
+            transactionAmount: { currency: 'EUR', amount: '6000.0' },
+            creditorAccount: { iban: 'NL80RABO1127000002', currency: 'EUR' },
+            creditorAgent: 'RABONL2U',
+            debtorAccount: { iban: 'NL62RABO0838250920' },
+            debtorName: 'Business ST A',
+            remittanceInformationUnstructured: 'Description ST 1',
+            initiatingPartyName: 'TRX ST',
+            raboBookingDateTime: '2021-03-18T14:21:00Z',
+            raboDetailedTransactionType: '633',
+            raboTransactionTypeName: 'st',
+            reasonCode: 'AG01'
+          }*/
+
 			    let transactionsRB = []
 			    for (let [index,transaction] of responseRB.data.transactions.booked.entries()) {
 			  	transactionsRB.push({
+              //UUID
               fetch_type: transaction.transactionAmount.amount >= 0 ?"credit":"debit" ,
               party: transaction.transactionAmount.amount >= 0 ? transaction.debtorName?transaction.debtorName:"NONAME" : transaction.creditorName ? transaction.creditorName :"NONAME" ,
               amount: transaction.transactionAmount.amount >= 0 ? transaction.transactionAmount.amount : transaction.transactionAmount.amount *-1,
@@ -97,11 +136,37 @@ export default async function FetchTransactions(user, BankAccount) {
           return [] //return {error:504, message:"We couldn't fetch the transactions, please try again"}
         if ("errorCode" in responseN.data)
           return [] //return {error:500, message:responseN.data.errorCode+": "+responseN.data.message}
+
+        /*
+
+        {
+        "id": "ACCOUNT_1_ID",
+        "iban": "NO2390412263056",
+        "bban": "90412263056",
+        "accountName": "Brukskonto",
+        "accountType": "TAXE",
+        "balances": [
+                {
+                "amount": "9049.32",
+                "currency": "NOK",
+                "type": "CLSG"
+                },
+                {
+                "amount": "10000",
+                "currency": "NOK",
+                "type": "EXPN"
+                }
+            ]
+        },
+        */
+
+
         let transactionsN = []
 			  for (let [index,transaction] of responseN.data.entries()) {
           transactionsN.push({
+            //UUID
             fetch_type: transaction.creditDebitIndicator === "CRDT" ? "credit" : "debit",
-            party: "NONAME",//transaction.transactionReference, 
+            party: transaction.transactionReference, //"NONAME"
             amount: transaction.transactionAmount.amount,
             status: "1",
             created_at: transaction.bookingDate,

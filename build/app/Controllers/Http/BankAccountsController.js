@@ -27,6 +27,7 @@ class BankAccountsController {
             await BankAccount_1.default.query().where('user_id', user.id).update({ primary: 'false' });
             return await BankAccount_1.default.create({
                 user_id: user.id,
+                bank: "payme",
                 alias: `PayMe Test Account (${user.last_name})`,
                 balance: 1000.00,
                 iban: `PMXX ${Date.now()}${(Math.random() * (9999999 - 999999) + 999999).toFixed()}`,
