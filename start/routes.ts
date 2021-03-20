@@ -3,7 +3,6 @@ import Route from '@ioc:Adonis/Core/Route'
 Route.resource('users', 'UsersController').apiOnly().except(["index","destroy"])
 Route.get('/users/search/:id', 'UsersController.search')
 
-Route.get('/auth', 'UsersController.getSelfData')
 
 Route.post('/login', 'UsersController.login')
 Route.get('/logout', 'UsersController.logout')
@@ -15,8 +14,16 @@ Route.resource('notifications', 'NotificationsController').apiOnly().only(['upda
 Route.post('/oauth', 'OpenBankingController.OAuthAuth')
 Route.post('/oauth-bank', 'OpenBankingController.OAuthAccessAndBanks')
 Route.post('/oauth-transactions', 'OpenBankingController.OAuthTransactions')
-Route.get('/refresh', 'OpenBankingController.refreshData')
-Route.get('/access_token', 'OpenBankingController.access_token')
+
+Route.get('/refresh-tokens', 'RefreshController.refreshTokens')
+Route.get('/auth', 'RefreshController.getSelfData')
+Route.get('/fetch-notifications', 'RefreshController.fetchNotifications')
+Route.get('/fetch-banks', 'RefreshController.fetchBanks')
+Route.get('/fetch-transactions', 'RefreshController.fetchTransactions')
+
+
+
+//Route.get('/access_token', 'OpenBankingController.access_token')
 
 
 

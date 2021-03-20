@@ -30,8 +30,8 @@ class BankAccountsController {
                 bank: "payme",
                 alias: `PayMe Test Account (${user.last_name})`,
                 balance: 1000.00,
-                iban: `PMXX ${Date.now()}${(Math.random() * (9999999 - 999999) + 999999).toFixed()}`,
-                bic: `PMXX PM ${(Math.random() * (99 - 0) + 0).toFixed()} ${(Math.random() * (999 - 0) + 0).toFixed()}`,
+                iban: `PM00PAYMETEST${Date.now()}`,
+                bic: `PM00PM${(Math.random() * (99 - 0) + 0).toFixed()} ${(Math.random() * (999 - 0) + 0).toFixed()}`,
                 primary: 'true',
                 expires_at: `${new Date(new Date().getFullYear(), new Date().getMonth() + 3, new Date().getDate()).toLocaleString()}`
             });

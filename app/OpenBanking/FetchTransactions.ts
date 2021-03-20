@@ -50,18 +50,25 @@ export default async function FetchTransactions(user, BankAccount) {
 
         let transactionsDB = []
         for (let [index,transaction] of responseDB.data.transactions.entries()) {
-          let fetch_type = transaction.amount >= 0 ?"credit":"debit"
+          let fetch_type = "credit"
+
+          if (transaction.paymentIdentification === "XYZ") {
+            fetch_type = transaction.amount >= 0 ?"credit":"debit"
+          } else {
+            fetch_type = transaction.amount <= 0 ?"credit":"debit"
+          }
 
 
 
         	transactionsDB.push({
-            id: transaction.paymentIdentification.replace("RTE",""),
-        		fetch_type:  fetch_type,
+            fetch_type:  fetch_type,
+            uuid: transaction.paymentIdentification.replace("RTE",""),
             party: transaction.counterPartyName, 
         		amount: transaction.amount >= 0 ? transaction.amount : transaction.amount *-1, //Always show a positive number
         		status: "1",
-        		created_at: transaction.bookingDate,
-        		updated_at: transaction.bookingDate
+        		created_at: transaction.bookingDate+` 0${index}:00`,
+        		updated_at: transaction.bookingDate+` 0${index}:00`,
+            color: "0018a8"
         	})
         }
         return transactionsDB
@@ -102,14 +109,16 @@ export default async function FetchTransactions(user, BankAccount) {
 
 			    let transactionsRB = []
 			    for (let [index,transaction] of responseRB.data.transactions.booked.entries()) {
+            // Maybe check with the creditoraccount and bank iban
 			  	transactionsRB.push({
               //UUID
               fetch_type: transaction.transactionAmount.amount >= 0 ?"credit":"debit" ,
               party: transaction.transactionAmount.amount >= 0 ? transaction.debtorName?transaction.debtorName:"NONAME" : transaction.creditorName ? transaction.creditorName :"NONAME" ,
               amount: transaction.transactionAmount.amount >= 0 ? transaction.transactionAmount.amount : transaction.transactionAmount.amount *-1,
               status: "1",
-              created_at: transaction.bookingDate,
-              updated_at: transaction.bookingDate
+              created_at: transaction.raboBookingDateTime,
+              updated_at: transaction.raboBookingDateTime,
+              color: "FF6600"
             })
 			    }
 			  return transactionsRB
@@ -136,7 +145,7 @@ export default async function FetchTransactions(user, BankAccount) {
           return [] //return {error:504, message:"We couldn't fetch the transactions, please try again"}
         if ("errorCode" in responseN.data)
           return [] //return {error:500, message:responseN.data.errorCode+": "+responseN.data.message}
-
+        console.log(responseN.data)
         /*
 
         {
@@ -160,20 +169,20 @@ export default async function FetchTransactions(user, BankAccount) {
         },
         */
 
-
         let transactionsN = []
 			  for (let [index,transaction] of responseN.data.entries()) {
           transactionsN.push({
             //UUID
             fetch_type: transaction.creditDebitIndicator === "CRDT" ? "credit" : "debit",
             party: transaction.transactionReference, //"NONAME"
-            amount: transaction.transactionAmount.amount,
+            amount: transaction.transactionAmount.value,
             status: "1",
             created_at: transaction.bookingDate,
-            updated_at: transaction.bookingDate
+            updated_at: transaction.bookingDate,
+            color: "1F69E5"
           })
 			  }
-			  return transactionsN
+			  return transactionsN.slice(0,10)
   
 
         break;

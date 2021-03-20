@@ -60,6 +60,8 @@ export default async function GetBankAccounts (user,Bank) {
         let auth_token = await GetToken(user,"auth_token","Neonomics") 
         let sessionId = await GetToken(user,"sessionId",Bank) 
 
+        console.log(auth_token, sessionId)
+
         let responseN = await axios.get( "https://sandbox.neonomics.io/ics/v3/accounts",
           { headers: { Authorization: `Bearer ${auth_token}`,
             Accept: `application/json`, "x-device-id": "PayMe-"+user.id,
