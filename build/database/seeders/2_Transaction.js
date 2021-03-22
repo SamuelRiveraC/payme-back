@@ -10,8 +10,8 @@ class TransactionSeeder extends Seeder_1.default {
         await Transaction_1.default.updateOrCreateMany("id", [
             {
                 id: 1,
-                user_sender_id: 7,
-                user_receiver_id: 8,
+                user_sender_id: 6,
+                user_receiver_id: 7,
                 account_sender_id: 1,
                 account_receiver_id: 2,
                 amount: 178.1,
@@ -19,8 +19,8 @@ class TransactionSeeder extends Seeder_1.default {
             },
             {
                 id: 2,
-                user_sender_id: 8,
-                user_receiver_id: 7,
+                user_sender_id: 7,
+                user_receiver_id: 6,
                 account_sender_id: 2,
                 account_receiver_id: 1,
                 amount: 287.2,
@@ -28,8 +28,8 @@ class TransactionSeeder extends Seeder_1.default {
             },
             {
                 id: 3,
-                user_sender_id: 8,
-                user_receiver_id: 7,
+                user_sender_id: 7,
+                user_receiver_id: 6,
                 account_sender_id: 2,
                 account_receiver_id: 1,
                 amount: 387.3,
@@ -37,8 +37,8 @@ class TransactionSeeder extends Seeder_1.default {
             },
             {
                 id: 4,
-                user_sender_id: 7,
-                user_receiver_id: 8,
+                user_sender_id: 6,
+                user_receiver_id: 7,
                 account_sender_id: 1,
                 account_receiver_id: 2,
                 amount: 478.4,

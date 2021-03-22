@@ -10,7 +10,7 @@ class BankAccountSeeder extends Seeder_1.default {
         await BankAccount_1.default.updateOrCreateMany("iban", [
             {
                 id: 1,
-                user_id: 7,
+                user_id: 6,
                 bank: "payme",
                 alias: "Checking (Ozdemir)",
                 balance: "1000",
@@ -20,7 +20,7 @@ class BankAccountSeeder extends Seeder_1.default {
             },
             {
                 id: 2,
-                user_id: 8,
+                user_id: 7,
                 bank: "payme",
                 alias: "Checking (Ella)",
                 balance: "1000",

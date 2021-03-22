@@ -19,7 +19,9 @@ const BankAccount_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/
 const uuid_1 = require("uuid");
 class Transaction extends Orm_1.BaseModel {
     static async createUUID(model) {
-        model.uuid = uuid_1.v4();
+        if (!model.$dirty.uuid) {
+            model.uuid = uuid_1.v4();
+        }
     }
 }
 __decorate([
