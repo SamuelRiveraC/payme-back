@@ -15,7 +15,7 @@ class BankAccounts extends Schema_1.default {
             table.string('resource_id');
             table.string('bank').notNullable();
             table.string('alias').notNullable();
-            table.string('iban').notNullable().unique();
+            table.string('iban').notNullable()
             table.string('bic').notNullable();
             table.string('primary').notNullable();
             table.float('balance', 16, 2).unsigned();

@@ -5,25 +5,25 @@ export default class NotificationSeeder extends BaseSeeder {
   public async run () {
     await Notifications.updateOrCreateMany("transaction_id", [
       {
-        user_id: 8,
+        user_id: 7,
         transaction_id: 1,
         type:'1',
         status:'0'
       },
       {
-        user_id: 7,
+        user_id: 6,
         transaction_id: 2,
         type:'1',
         status:'0'
       },
       {
-        user_id: 7,
+        user_id: 6,
         transaction_id: 3,
         type:'1',
         status:'0'
       },
       {
-        user_id: 8,
+        user_id: 7,
         transaction_id: 4,
         type:'1',
         status:'0'

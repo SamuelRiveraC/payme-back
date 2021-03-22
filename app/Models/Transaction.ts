@@ -14,7 +14,9 @@ export default class Transaction extends BaseModel {
 
   @beforeCreate()
   public static async createUUID (model: Transaction) {
-    model.uuid = uuid()
+    if (!model.$dirty.uuid) {
+      model.uuid = uuid()
+    }
   }
 
   @column()

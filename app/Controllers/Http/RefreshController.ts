@@ -1,9 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-import User from 'App/Models/User'
-import Transaction from 'App/Models/Transaction'
 import BankAccount from 'App/Models/BankAccount'
-import Notification from 'App/Models/Notification'
 
 import FetchRefreshToken from 'App/OpenBanking/FetchRefreshToken'
 import FetchBankAccounts from 'App/OpenBanking/FetchBankAccounts'
@@ -113,14 +110,20 @@ export default class RefreshController {
 		let primaryAccount = user.bankAccounts.find((account)=> {
 		  return account.primary === "true"
 		})
-		if (primaryAccount !== undefined && primaryAccount.bank !== "payme") {
+		//if (primaryAccount !== undefined && primaryAccount.bank !== "payme" && primaryAccount.bank !== "rabobank") {
+		if (primaryAccount !== undefined && primaryAccount.bank == "deutschebank") {
+			//RB uses account.balance.amount //Do not update because it wont work
 			let GetBankAccounts = await FetchBankAccounts(user, primaryAccount.bank)
-
 			if(GetBankAccounts.length > 0) {
 				for (const [index, account] of GetBankAccounts.entries()) {
-					if (primaryAccount.iban === account.iban) {
+					if (primaryAccount.iban === account.iban && primaryAccount.bank === "deutschebank") {
 						await BankAccount.updateOrCreate({iban: account.iban, user_id: user.id}, {
-							balance: account.currentBalance,
+							balance: account.currentBalance, 
+							//NE uses // balance: account.balances[0].amount < 0 ? account.balances[0].amount*-1 : account.balances[0].amount
+						})
+					} else if (primaryAccount.iban === account.iban) {
+						await BankAccount.updateOrCreate({iban: account.iban, user_id: user.id}, {
+							balance: account.balances[0].amount < 0 ? account.balances[0].amount*-1 : account.balances[0].amount
 						})
 					}
 				}
@@ -174,14 +177,13 @@ export default class RefreshController {
 		let transactionsAPI = []
 		if (primaryAccount !== undefined && primaryAccount.bank !== "payme") {
 			transactionsAPI = await FetchTransactions(user, primaryAccount)
-			AllTransactions = AllTransactions.concat(transactionsAPI)
+			AllTransactions = AllTransactions.concat(transactionsAPI.slice(0, 9))
 		}
 
 		AllTransactions = AllTransactions.sort( function(a,b) { 
 		  let c = new Date(a.updated_at); let d = new Date(b.updated_at); return d-c; 
-		} ).slice(0, 9); 
-
-		return AllTransactions
+		} )
+		return AllTransactions.slice(0, 9); 
 	}
 
 }

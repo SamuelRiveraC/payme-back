@@ -93,14 +93,34 @@ export default class UsersController {
     const emailOrPhone = request.input('emailOrPhone')
     const password = request.input('password')
 
-    /*
-    Check if email or phone then format
-    */
-
     const token = await auth.use('api').attempt(emailOrPhone, password)
-        
     let user  = await User.findOrFail(auth.user.id)
-  
+
+    await user.preload('bankAccounts')
+    let primaryAccount = user.bankAccounts.find((account)=> {
+      return account.primary === "true"
+    })
+    if (primaryAccount !== undefined) {
+      await primaryAccount.preload('transactionsSent', (query) => {
+        query.where('status', 1)
+        query.preload('sender')
+        query.preload('receiver')
+      })
+      await primaryAccount.preload('transactionsReceived', (query) => {
+        query.where('status', 1)
+        query.preload('sender')
+        query.preload('receiver')
+      })
+    }
+    await user.preload('notifications', (query) => {
+      query.where("status",0)
+      query.preload('transaction', (query) => {
+        query.preload('sender')
+        query.preload('receiver')
+      })
+    })  
+
+
     return { ...token.toJSON(), user }
   }
   
