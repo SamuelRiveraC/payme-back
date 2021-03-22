@@ -37,9 +37,10 @@ export default async function FetchAccessToken (user,BANK,CODE) {
         	}).then( (response) => { return response.data
             }).catch((error) => {return error.response.data});
             if (rabobankResponse === undefined)
-                return {error:504, message:"We couldn't log in Deutschebank, Please try again"}
+                return {error:504, message:"We couldn't log in Rabobank, Please try again"}
             return rabobankResponse
           break;
+
       case "neonomics":
           return {error:504, message:"You accessed Neonomics as you would with other APIs, (This error shouldn't show up)"}
         break;

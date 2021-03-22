@@ -5,21 +5,23 @@ export default class BankAccountSeeder extends BaseSeeder {
   public async run () {
     await BankAccount.updateOrCreateMany("iban",[
       {
-        user_id: 7,
+        id:1,
+        user_id: 6,
         bank:"payme",
         alias: "Checking (Ozdemir)",
         balance: "1000"
-        iban: 'FR0150000000000000000000',
-        bic:'DBXX FR 00 000',
+        iban: 'PM00PAYMETESTACCOUNT1138',
+        bic:'DBXXRP01138',
         primary:'true'
       },
       {
-        user_id: 8,
+        id:2,
+        user_id: 7,
         bank:"payme",
         alias: "Checking (Ella)",
         balance: "1000"
-        iban: 'FR0150000000000000000000',
-        bic:'DBXX FR 00 000',
+        iban: 'PM00PAYMETESTACCOUNT2187',
+        bic:'DBXXRP02187',
         primary:'true'
       }
     ])

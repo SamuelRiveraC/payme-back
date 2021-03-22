@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "node ace build --production",
+    "build": "node ace build --production && cp -a build/. ../payme-build && cp -a package.json ../payme-build",
     "start": "node server.js",
     "dev": "node ace serve --watch"
   },
@@ -24,6 +24,7 @@
     "@adonisjs/session": "^4.0.6",
     "axios": "^0.21.1",
     "crypto": "^1.0.1",
+    "ip": "^1.1.5",
     "js-sha512": "^0.8.0",
     "luxon": "^1.25.0",
     "mysql": "^2.18.1",

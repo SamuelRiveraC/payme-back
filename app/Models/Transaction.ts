@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column, beforeCreate, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
 import User from 'App/Models/User'
+import BankAccount from 'App/Models/BankAccount'
 import { v4 as uuid } from 'uuid'
 // import { nanoid } from 'nanoid/async'
 
@@ -13,7 +14,9 @@ export default class Transaction extends BaseModel {
 
   @beforeCreate()
   public static async createUUID (model: Transaction) {
-    model.uuid = uuid()
+    if (!model.$dirty.uuid) {
+      model.uuid = uuid()
+    }
   }
 
   @column()
@@ -21,6 +24,12 @@ export default class Transaction extends BaseModel {
   
   @column()
   public user_receiver_id: number
+  
+  @column()
+  public account_sender_id: number
+  
+  @column()
+  public account_receiver_id: number
 
   @column()
   public amount: number
@@ -33,6 +42,13 @@ export default class Transaction extends BaseModel {
 
   @belongsTo(() => User, { localKey: 'id', foreignKey: 'user_receiver_id' })
   public receiver: BelongsTo<typeof User>
+
+  @belongsTo(() => BankAccount, { localKey: 'id', foreignKey: 'account_sender_id' })
+  public senderAccount: BelongsTo<typeof BankAccount>
+
+  @belongsTo(() => BankAccount, { localKey: 'id', foreignKey: 'account_receiver_id' })
+  public receiverAccount: BelongsTo<typeof BankAccount>
+
 
   /*
   @beforeSave()

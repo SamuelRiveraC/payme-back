@@ -1,13 +1,15 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
 import User from 'App/Models/User'
+import BankAccount from 'App/Models/BankAccount'
 import FetchTransactions from 'App/OpenBanking/FetchTransactions'
+import FetchBankAccounts from 'App/OpenBanking/FetchBankAccounts'
 
 export default class UsersController {
 
 
-  public async search ({ params}: HttpContextContract) {
-    const user = {id:1} //await auth.authenticate()
+  public async search ({auth, params}: HttpContextContract) {
+    const user = await auth.authenticate()
 
     const users = await User.query()
     .where( function (user : User) {
@@ -24,38 +26,6 @@ export default class UsersController {
     return users
   }
 
-  public async getSelfData ({auth}: HttpContextContract) {
-    let user = await auth.authenticate()
-    
-    await user.preload('bankAccounts')
-
-    await user.preload('transactionsSent', (query) => {
-      query.where('status', 1)
-      query.preload('sender')
-      query.preload('receiver')
-    })
-    await user.preload('transactionsReceived', (query) => {
-      query.where('status', 1)
-      query.preload('sender')
-      query.preload('receiver')
-    })
-    await user.preload('notifications', (query) => {
-      query.preload('transaction', (query) => {
-        query.preload('sender')
-        query.preload('receiver')
-      })
-    })
-
-    let primaryAccount = user.bankAccounts.find((account)=> {
-      return account.primary === "true"
-    })
-
-    let transactionsAPI = await FetchTransactions(user,primaryAccount.serialize())
-
-    return {...user.serialize(), transactionsAPI:transactionsAPI}
-  }
-
-
 
 
   public async store ({request, auth}: HttpContextContract) {
@@ -63,26 +33,6 @@ export default class UsersController {
     savePayload.profile_picture = "https://via.placeholder.com/160/29363D/EDF4FC?text="+request.input('first_name')[0]+request.input('last_name')[0]
     const user = await User.create(savePayload)
     const token = await auth.use('api').attempt(request.input('email'), request.input('password'))
-
-    await user.preload('bankAccounts')
-
-    await user.preload('transactionsSent', (query) => {
-      query.where('status', 1)
-      query.preload('sender')
-      query.preload('receiver')
-    })
-    await user.preload('transactionsReceived', (query) => {
-      query.where('status', 1)
-      query.preload('sender')
-      query.preload('receiver')
-    })
-    await user.preload('notifications', (query) => {
-      query.preload('transaction', (query) => {
-        query.preload('sender')
-        query.preload('receiver')
-      })
-    })
-
     return { ...token.toJSON(), user }
   }
 
@@ -143,35 +93,33 @@ export default class UsersController {
     const emailOrPhone = request.input('emailOrPhone')
     const password = request.input('password')
 
-    /*
-    Check if email or phone then format
-    */
-
     const token = await auth.use('api').attempt(emailOrPhone, password)
-        
     let user  = await User.findOrFail(auth.user.id)
-    
 
-    /**
-     * OPEN BANKING - AIS API - RELOAD BANK BALANCE
-    **/
     await user.preload('bankAccounts')
-    await user.preload('transactionsSent', (query) => {
-      query.where('status', 1)
-      query.preload('sender')
-      query.preload('receiver')
+    let primaryAccount = user.bankAccounts.find((account)=> {
+      return account.primary === "true"
     })
-    await user.preload('transactionsReceived', (query) => {
-      query.where('status', 1)
-      query.preload('sender')
-      query.preload('receiver')
-    })
+    if (primaryAccount !== undefined) {
+      await primaryAccount.preload('transactionsSent', (query) => {
+        query.where('status', 1)
+        query.preload('sender')
+        query.preload('receiver')
+      })
+      await primaryAccount.preload('transactionsReceived', (query) => {
+        query.where('status', 1)
+        query.preload('sender')
+        query.preload('receiver')
+      })
+    }
     await user.preload('notifications', (query) => {
+      query.where("status",0)
       query.preload('transaction', (query) => {
         query.preload('sender')
         query.preload('receiver')
       })
-    })
+    })  
+
 
     return { ...token.toJSON(), user }
   }

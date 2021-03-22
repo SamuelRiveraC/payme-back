@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const luxon_1 = require("luxon");
 const Orm_1 = global[Symbol.for('ioc.use')]("Adonis/Lucid/Orm");
 const User_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/User"));
+const BankAccount_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/BankAccount"));
 const uuid_1 = require("uuid");
 class Transaction extends Orm_1.BaseModel {
     static async createUUID(model) {
@@ -40,6 +41,14 @@ __decorate([
 __decorate([
     Orm_1.column(),
     __metadata("design:type", Number)
+], Transaction.prototype, "account_sender_id", void 0);
+__decorate([
+    Orm_1.column(),
+    __metadata("design:type", Number)
+], Transaction.prototype, "account_receiver_id", void 0);
+__decorate([
+    Orm_1.column(),
+    __metadata("design:type", Number)
 ], Transaction.prototype, "amount", void 0);
 __decorate([
     Orm_1.column(),
@@ -53,6 +62,14 @@ __decorate([
     Orm_1.belongsTo(() => User_1.default, { localKey: 'id', foreignKey: 'user_receiver_id' }),
     __metadata("design:type", Object)
 ], Transaction.prototype, "receiver", void 0);
+__decorate([
+    Orm_1.belongsTo(() => BankAccount_1.default, { localKey: 'id', foreignKey: 'account_sender_id' }),
+    __metadata("design:type", Object)
+], Transaction.prototype, "senderAccount", void 0);
+__decorate([
+    Orm_1.belongsTo(() => BankAccount_1.default, { localKey: 'id', foreignKey: 'account_receiver_id' }),
+    __metadata("design:type", Object)
+], Transaction.prototype, "receiverAccount", void 0);
 __decorate([
     Orm_1.column.dateTime({ autoCreate: true }),
     __metadata("design:type", luxon_1.DateTime)

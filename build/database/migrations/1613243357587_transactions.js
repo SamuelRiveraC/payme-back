@@ -12,10 +12,12 @@ class Transactions extends Schema_1.default {
     async up() {
         this.schema.createTable(this.tableName, (table) => {
             table.increments("id").primary();
-            table.uuid("uuid");
+            table.string("uuid");
             table.integer('user_sender_id').unsigned().references('id').inTable('users').onDelete('CASCADE');
             table.integer('user_receiver_id').unsigned().references('id').inTable('users').onDelete('CASCADE');
-            table.float('amount').unsigned();
+            table.integer('account_sender_id').unsigned().references('id').inTable('bank_accounts').onDelete('CASCADE');
+            table.integer('account_receiver_id').unsigned().references('id').inTable('bank_accounts').onDelete('CASCADE');
+            table.float('amount', 16, 2).unsigned();
             table.integer('status').unsigned();
             table.timestamps(true, true);
         });
