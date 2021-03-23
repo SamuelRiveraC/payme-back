@@ -27,6 +27,13 @@ export default class NotificationsController {
     return notification 
   }
 
+  public async clearNotifications ({auth}: HttpContextContract) {
+    const user = await auth.authenticate()
+    await Notification.query().where('user_id', user.id).update({ status: '1' })
+    return true 
+  }
+
+
   public async destroy ({request}: HttpContextContract) {
     const notification = await Notification.findOrFail(request.input("id"))
     await notification.delete()

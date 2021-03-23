@@ -395,7 +395,7 @@ export default class OpenBankingController {
 
       console.log("STARTING THE TRANSFER", await GetIp(), await NeonomicsUniqueId(user), neonomicsSessionId)
 
-      if (senderAccount.bank === "Sbanken" || senderAccount.bank === "Hizonti Bank" || senderAccount.bank === "Justo Bank") {
+      if (senderAccount.bank === "DNB" || senderAccount.bank === "Sbanken" || senderAccount.bank === "Hizonti Bank" || senderAccount.bank === "Justo Bank") {
         
         transaction.status = '1'
         console.log(senderAccount.bank, "NO VALIDATION")
@@ -506,6 +506,9 @@ export default class OpenBankingController {
       
     console.log("CHECKING: ", senderAccount.serialize(), receiverAccount.serialize())
 
+
+
+
       let CHECKFIRSTBackPaymentData = await axios.get( 
         "https://sandbox.neonomics.io/ics/v3/payments/sepa-credit/"+request.input('code'),
         { headers: {
@@ -569,7 +572,9 @@ export default class OpenBankingController {
           return error.response
         })
       console.log("GET PAYMENT INFO", getBackPaymentData.data)
-      if (getBackPaymentData.data.status === "ACTC" || getBackPaymentData.data.status === "ACSP" || getBackPaymentData.data.status === "ACSC") {
+      if (getBackPaymentData.data.status === "ACTC" 
+        || getBackPaymentData.data.status === "ACSP" 
+        || getBackPaymentData.data.status === "ACSC") {
         // I WILL ASSUME I WON'T SEE THE TRANSACTION MADE ON THE API - CONFIRM THE TRANSACTION
         transaction.status = "1"
         let NeonomicsPayment = await MakePayment(user, counterParty, transaction, "Update")

@@ -6,7 +6,7 @@ export default class UserSeeder extends BaseSeeder {
     await User.updateOrCreateMany("email",[
       { 
         id:1,
-        email: 'Angela@test.com',
+        email: 'Angela@payme.com',
         phone: '+100000001',
         password: 'secret',
         first_name: 'Angela',
@@ -15,7 +15,7 @@ export default class UserSeeder extends BaseSeeder {
       },
       {
         id:2,
-        email: 'Adam@test.com',
+        email: 'Adam@payme.com',
         phone: '+100000002',
         password: 'secret',
         first_name: 'Adam',
@@ -24,7 +24,7 @@ export default class UserSeeder extends BaseSeeder {
       },
       {
         id:3,
-        email: 'Sophie@test.com',
+        email: 'Sophie@payme.com',
         phone: '+100000003',
         password: 'secret',
         first_name: 'Sophie',
@@ -33,7 +33,7 @@ export default class UserSeeder extends BaseSeeder {
       },
       {
         id:4,
-        email: 'Emma@test.com',
+        email: 'Emma@payme.com',
         phone: '+100000005',
         password: 'secret',
         first_name: 'Emma',
@@ -42,7 +42,7 @@ export default class UserSeeder extends BaseSeeder {
       },
       {
         id:5,
-        email: 'Bram@test.com',
+        email: 'Bram@payme.com',
         phone: '+100000006',
         password: 'secret',
         first_name: 'Bram',
@@ -51,7 +51,7 @@ export default class UserSeeder extends BaseSeeder {
       },
       {
         id:6,
-        email: 'Ozdemir@test.com',
+        email: 'Ozdemir@payme.com',
         phone: '+100000007',
         password: 'secret',
         first_name: 'Suayip',
@@ -60,7 +60,7 @@ export default class UserSeeder extends BaseSeeder {
       },
       {
         id:7,
-        email: 'Ella@test.com',
+        email: 'Ella@payme.com',
         phone: '+100000008',
         password: 'secret',
         first_name: 'Ella',

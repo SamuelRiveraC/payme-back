@@ -56,7 +56,17 @@ export default class User extends BaseModel {
   @beforeSave()
   public static async Slug (user: User) {
     const total = await Database.query().count('* as total').from('users')
-    user.slug = user.email.split('@')[0] + total[0]["total"]
+    
+    //user.slug = user.email.split('@')[0] + total[0]["total"]
+    
+
+    let temptativeSlug = `${user.first_name}-${user.last_name}`.replace(" ","-")
+    let check = await User.findBy("slug", temptativeSlug)
+    if (check)
+      user.slug = `${user.first_name}-${user.last_name}`
+    else
+      user.slug = `${user.first_name}-${user.last_name}-${total[0]["total"]}`
+
   }
 
   @beforeSave()

@@ -18,7 +18,7 @@ export default async function FetchTransactions(user, BankAccount) {
         ).then( (response) => { return response })
         .catch((error) => { return error.response })
 
-        if (responseDB.data === undefined)
+        if (responseDB === undefined)
             return [] //{error:504, message:"We couldn't fetch the transactions, please try again"}
         if ("code" in responseDB.data)
             return [] //{error:500, message:responseDB.data.code+": "+responseDB.data.message}

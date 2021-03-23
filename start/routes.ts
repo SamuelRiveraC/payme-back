@@ -9,6 +9,8 @@ Route.get('/logout', 'UsersController.logout')
 
 Route.resource('bank_accounts', 'BankAccountsController').apiOnly().except(['index'])
 Route.resource('notifications', 'NotificationsController').apiOnly().only(['update'])
+Route.post('/notification-clear', 'NotificationsController.clearNotifications')
+Route.post('/get-transaction', 'TransactionsController.show')
 
 Route.post('/oauth', 'OpenBankingController.OAuthInitiateAuth')
 Route.post('/oauth-bank', 'OpenBankingController.OAuthAccessAndBanks')
