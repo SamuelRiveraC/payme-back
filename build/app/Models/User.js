@@ -27,7 +27,12 @@ class User extends Orm_1.BaseModel {
     }
     static async Slug(user) {
         const total = await Database_1.default.query().count('* as total').from('users');
-        user.slug = user.email.split('@')[0] + total[0]["total"];
+        let temptativeSlug = `${user.first_name}-${user.last_name}`.replace(" ", "-");
+        let check = await User.findBy("slug", temptativeSlug);
+        if (check)
+            user.slug = `${user.first_name}-${user.last_name}`;
+        else
+            user.slug = `${user.first_name}-${user.last_name}-${total[0]["total"]}`;
     }
     static async Profile_picture(user) {
         const profile_picture = "https://via.placeholder.com/160/29363D/EDF4FC?text=" + user.first_name[0] + user.last_name[0];

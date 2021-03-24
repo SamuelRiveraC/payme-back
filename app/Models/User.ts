@@ -62,7 +62,7 @@ export default class User extends BaseModel {
 
     let temptativeSlug = `${user.first_name}-${user.last_name}`.replace(" ","-")
     let check = await User.findBy("slug", temptativeSlug)
-    if (check)
+    if (!check)
       user.slug = `${user.first_name}-${user.last_name}`
     else
       user.slug = `${user.first_name}-${user.last_name}-${total[0]["total"]}`

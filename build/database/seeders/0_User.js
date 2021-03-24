@@ -10,7 +10,7 @@ class UserSeeder extends Seeder_1.default {
         await User_1.default.updateOrCreateMany("email", [
             {
                 id: 1,
-                email: 'Angela@test.com',
+                email: 'Angela@payme.com',
                 phone: '+100000001',
                 password: 'secret',
                 first_name: 'Angela',
@@ -19,7 +19,7 @@ class UserSeeder extends Seeder_1.default {
             },
             {
                 id: 2,
-                email: 'Adam@test.com',
+                email: 'Adam@payme.com',
                 phone: '+100000002',
                 password: 'secret',
                 first_name: 'Adam',
@@ -28,7 +28,7 @@ class UserSeeder extends Seeder_1.default {
             },
             {
                 id: 3,
-                email: 'Sophie@test.com',
+                email: 'Sophie@payme.com',
                 phone: '+100000003',
                 password: 'secret',
                 first_name: 'Sophie',
@@ -37,7 +37,7 @@ class UserSeeder extends Seeder_1.default {
             },
             {
                 id: 4,
-                email: 'Emma@test.com',
+                email: 'Emma@payme.com',
                 phone: '+100000005',
                 password: 'secret',
                 first_name: 'Emma',
@@ -46,7 +46,7 @@ class UserSeeder extends Seeder_1.default {
             },
             {
                 id: 5,
-                email: 'Bram@test.com',
+                email: 'Bram@payme.com',
                 phone: '+100000006',
                 password: 'secret',
                 first_name: 'Bram',
@@ -55,7 +55,7 @@ class UserSeeder extends Seeder_1.default {
             },
             {
                 id: 6,
-                email: 'Ozdemir@test.com',
+                email: 'Ozdemir@payme.com',
                 phone: '+100000007',
                 password: 'secret',
                 first_name: 'Suayip',
@@ -64,7 +64,7 @@ class UserSeeder extends Seeder_1.default {
             },
             {
                 id: 7,
-                email: 'Ella@test.com',
+                email: 'Ella@payme.com',
                 phone: '+100000008',
                 password: 'secret',
                 first_name: 'Ella',

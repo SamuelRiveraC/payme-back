@@ -10,6 +10,8 @@ Route_1.default.post('/login', 'UsersController.login');
 Route_1.default.get('/logout', 'UsersController.logout');
 Route_1.default.resource('bank_accounts', 'BankAccountsController').apiOnly().except(['index']);
 Route_1.default.resource('notifications', 'NotificationsController').apiOnly().only(['update']);
+Route_1.default.post('/notification-clear', 'NotificationsController.clearNotifications');
+Route_1.default.post('/get-transaction', 'TransactionsController.show');
 Route_1.default.post('/oauth', 'OpenBankingController.OAuthInitiateAuth');
 Route_1.default.post('/oauth-bank', 'OpenBankingController.OAuthAccessAndBanks');
 Route_1.default.post('/oauth-transactions', 'OpenBankingController.OAuthTransactions');

@@ -25,6 +25,11 @@ class NotificationsController {
         }
         return notification;
     }
+    async clearNotifications({ auth }) {
+        const user = await auth.authenticate();
+        await Notification_1.default.query().where('user_id', user.id).update({ status: '1' });
+        return true;
+    }
     async destroy({ request }) {
         const notification = await Notification_1.default.findOrFail(request.input("id"));
         await notification.delete();

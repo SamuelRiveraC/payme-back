@@ -33,7 +33,7 @@ class BankAccountsController {
                 iban: `PM00PAYMETEST${Date.now()}`,
                 bic: `PM00PM${(Math.random() * (99 - 0) + 0).toFixed()} ${(Math.random() * (999 - 0) + 0).toFixed()}`,
                 primary: 'true',
-                expires_at: `${new Date(new Date().getFullYear(), new Date().getMonth() + 3, new Date().getDate()).toLocaleString()}`
+                expires_at: undefined
             });
         }
     }
